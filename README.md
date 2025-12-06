@@ -8,17 +8,18 @@ Follow these steps to create a virtual environment, install dependencies, run mi
 
 1. Open a terminal and change to the project directory:
     git cloen https://github.com/sivaprakashDesingu/resume-builder.git
+   
 	cd resume-builder
 
-2. Create a virtual environment (recommended name: `.venv`):
+3. Create a virtual environment (recommended name: `.venv`):
 
 	python3 -m venv .venv
 
-3. Activate the virtual environment:
+4. Activate the virtual environment:
 
 	source .venv/bin/activate
 
-4. Upgrade pip and install dependencies. This project does not include a `requirements.txt` file by default; at minimum install Django 4.x (the project was generated with Django 4.x):
+5. Upgrade pip and install dependencies. This project does not include a `requirements.txt` file by default; at minimum install Django 4.x (the project was generated with Django 4.x):
 
 	python -m pip install --upgrade pip setuptools wheel
 	pip install "django>=4,<5"
@@ -27,11 +28,11 @@ Follow these steps to create a virtual environment, install dependencies, run mi
 
 	pip install -r requirements.txt
 
-5. Apply database migrations:
+6. Apply database migrations:
 
 	python manage.py migrate
 
-6. Start the development server (default port 8000):
+7. Start the development server (default port 8000):
 
 	python manage.py runserver 127.0.0.1:8000
 
@@ -39,7 +40,7 @@ Follow these steps to create a virtual environment, install dependencies, run mi
 
 	.venv/bin/python manage.py runserver 127.0.0.1:8000
 
-7. Open your browser at http://127.0.0.1:8000/ to view the site.
+8. Open your browser at http://127.0.0.1:8000/ to view the site.
 
 ## Notes & troubleshooting
 
