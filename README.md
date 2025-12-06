@@ -7,7 +7,8 @@ This repository contains a Django-based resume builder app.
 Follow these steps to create a virtual environment, install dependencies, run migrations, and start the development server.
 
 1. Open a terminal and change to the project directory:
-    git cloen https://github.com/sivaprakashDesingu/resume-builder.git
+   
+    git clone https://github.com/sivaprakashDesingu/resume-builder.git
    
 	cd resume-builder
 
