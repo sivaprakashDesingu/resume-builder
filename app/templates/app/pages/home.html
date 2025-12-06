@@ -1,0 +1,590 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resumify - Build Your Dream Resume</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* 3D Transform classes for the hero image */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .rotate-y-12 {
+            transform: rotateY(-12deg) rotateX(5deg);
+            transform-style: preserve-3d;
+        }
+        
+        .blob {
+            position: absolute;
+            filter: blur(40px);
+            z-index: -1;
+            opacity: 0.4;
+        }
+    </style>
+</head>
+<body class="font-sans text-slate-800 bg-slate-50 antialiased overflow-x-hidden">
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 transition-all duration-300" id="navbar">
+        <div class="absolute inset-0 bg-white/80 backdrop-blur-md border-b border-slate-200/50 shadow-sm"></div>
+        <div class="container mx-auto px-6 py-4 relative">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <a href="#" class="flex items-center gap-2 group">
+                    <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-file-signature text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold text-slate-900 tracking-tight">Resumify</span>
+                </a>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#features" class="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">Features</a>
+                    <a href="{% url 'resume_explorer' %}" class="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">Templates</a>
+                    <a href="#testimonials" class="text-sm font-medium text-slate-600 hover:text-brand-600 transition-colors">Reviews</a>
+                </div>
+
+                <!-- CTA Buttons -->
+                <div class="hidden md:flex items-center gap-4">
+                    <a href="#" class="text-sm font-semibold text-slate-600 hover:text-slate-900">Log in</a>
+                    <a href="/resume-eplorer" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-full shadow-lg hover:shadow-brand-500/30 transition-all transform hover:-translate-y-0.5">
+                        Create My Resume
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button class="md:hidden text-slate-600 text-2xl" id="mobile-menu-btn">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Dropdown -->
+        <div class="hidden md:hidden absolute top-full left-0 w-full bg-white border-b border-slate-100 shadow-xl" id="mobile-menu">
+            <div class="flex flex-col p-6 gap-4">
+                <a href="#features" class="text-slate-600 font-medium">Features</a>
+                <a href="{% url 'resume_explorer' %}" class="text-slate-600 font-medium">Templates</a>
+                <a href="#testimonials" class="text-slate-600 font-medium">Reviews</a>
+                <hr class="border-slate-100">
+                <a href="#" class="text-center py-3 text-slate-600 font-semibold">Log in</a>
+                <a href="/resume-eplorer" class="text-center py-3 bg-brand-600 text-white rounded-lg font-semibold">Create My Resume</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
+        <!-- Background Decorations -->
+        <div class="blob bg-purple-300 w-96 h-96 rounded-full top-0 left-0 -translate-x-1/2 -translate-y-1/2 mix-blend-multiply"></div>
+        <div class="blob bg-blue-300 w-96 h-96 rounded-full bottom-0 right-0 translate-x-1/3 translate-y-1/3 mix-blend-multiply"></div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+                <!-- Text Content -->
+                <div class="max-w-2xl opacity-0 animate-fade-in-up" style="animation-delay: 0.1s;">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-100 text-brand-600 text-xs font-bold uppercase tracking-wide mb-6">
+                        <span class="w-2 h-2 rounded-full bg-brand-600 animate-pulse"></span>
+                        AI-Powered Resume Builder
+                    </div>
+                    <h1 class="text-5xl lg:text-6xl font-bold text-slate-900 leading-[1.1] mb-6">
+                        Only <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-purple-600">2% of resumes</span> make it past the first round.
+                    </h1>
+                    <p class="text-lg text-slate-600 mb-8 leading-relaxed">
+                        Be in the top 2%. Build a professional, ATS-friendly resume in minutes with our AI-assisted builder. No design skills needed.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="/resume-eplorer" class="px-8 py-4 bg-brand-600 hover:bg-brand-700 text-white font-semibold rounded-full shadow-xl hover:shadow-brand-500/40 transition-all transform hover:-translate-y-1 text-center">
+                            Build My Resume Now
+                        </a>
+                        <a href="/resume-eplorer" class="px-8 py-4 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-semibold rounded-full shadow-sm transition-all flex items-center justify-center gap-2 group">
+                            <i class="fa-solid fa-play text-brand-600 text-xs p-1.5 rounded-full bg-blue-50 group-hover:bg-blue-100 transition-colors"></i>
+                            View Samples
+                        </a>
+                    </div>
+                    <div class="mt-8 flex items-center gap-4 text-sm text-slate-500">
+                        <div class="flex -space-x-2">
+                            <div class="w-8 h-8 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-xs overflow-hidden"><i class="fa-solid fa-user text-slate-400"></i></div>
+                            <div class="w-8 h-8 rounded-full bg-slate-300 border-2 border-white flex items-center justify-center text-xs overflow-hidden"><i class="fa-solid fa-user text-slate-500"></i></div>
+                            <div class="w-8 h-8 rounded-full bg-slate-400 border-2 border-white flex items-center justify-center text-xs overflow-hidden"><i class="fa-solid fa-user text-slate-600"></i></div>
+                        </div>
+                        <p>Join 10,000+ users hired at top companies</p>
+                    </div>
+                </div>
+
+                <!-- Visual Content (CSS Resume Representation) -->
+                <div class="relative perspective-1000 hidden lg:block opacity-0 animate-fade-in-up" style="animation-delay: 0.3s;">
+                    <div class="rotate-y-12 animate-float">
+                        <!-- Abstract Resume Document -->
+                        <div class="w-[450px] aspect-[1/1.41] bg-white rounded-lg shadow-2xl p-8 relative border border-slate-100 overflow-hidden">
+                            <!-- Header -->
+                            <div class="flex gap-4 mb-8">
+                                <div class="w-20 h-20 rounded-full bg-slate-200 shrink-0"></div>
+                                <div class="flex-1 space-y-2 pt-2">
+                                    <div class="h-6 bg-slate-800 rounded w-3/4"></div>
+                                    <div class="h-4 bg-brand-500 rounded w-1/2"></div>
+                                </div>
+                            </div>
+                            <!-- Columns -->
+                            <div class="grid grid-cols-3 gap-6 h-full">
+                                <!-- Sidebar -->
+                                <div class="col-span-1 space-y-6">
+                                    <div class="space-y-2">
+                                        <div class="h-3 bg-slate-300 rounded w-1/3 mb-3"></div>
+                                        <div class="h-2 bg-slate-100 rounded w-full"></div>
+                                        <div class="h-2 bg-slate-100 rounded w-full"></div>
+                                        <div class="h-2 bg-slate-100 rounded w-4/5"></div>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <div class="h-3 bg-slate-300 rounded w-1/3 mb-3"></div>
+                                        <div class="h-2 bg-slate-100 rounded w-full"></div>
+                                        <div class="h-2 bg-slate-100 rounded w-full"></div>
+                                    </div>
+                                </div>
+                                <!-- Main Content -->
+                                <div class="col-span-2 space-y-6">
+                                    <div class="p-3 bg-blue-50/50 rounded-lg space-y-2">
+                                        <div class="h-3 bg-brand-200 rounded w-1/4"></div>
+                                        <div class="h-2 bg-slate-200 rounded w-full"></div>
+                                        <div class="h-2 bg-slate-200 rounded w-5/6"></div>
+                                    </div>
+                                    
+                                    <div class="space-y-3">
+                                        <div class="h-3 bg-slate-300 rounded w-1/4"></div>
+                                        <div class="h-2 bg-slate-100 rounded w-full"></div>
+                                        <div class="h-2 bg-slate-100 rounded w-full"></div>
+                                        <div class="h-2 bg-slate-100 rounded w-3/4"></div>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div class="h-3 bg-slate-300 rounded w-1/4"></div>
+                                        <div class="h-2 bg-slate-100 rounded w-full"></div>
+                                        <div class="h-2 bg-slate-100 rounded w-full"></div>
+                                        <div class="h-2 bg-slate-100 rounded w-5/6"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Floating Badge -->
+                            <div class="absolute bottom-8 -left-8 bg-white px-6 py-4 rounded-xl shadow-xl border border-slate-100 flex items-center gap-4 animate-bounce" style="animation-duration: 3s;">
+                                <div class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
+                                    <i class="fa-solid fa-check"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-500 font-semibold uppercase">ATS Score</p>
+                                    <p class="text-xl font-bold text-slate-800">98/100</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof -->
+    <section class="py-10 border-y border-slate-200 bg-white">
+        <div class="container mx-auto px-6">
+            <p class="text-center text-sm font-semibold text-slate-400 uppercase tracking-widest mb-8">Trusted by professionals from</p>
+            <div class="flex flex-wrap justify-center gap-10 md:gap-20 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+                <!-- Simple Text Logos for file simplicity -->
+                <span class="text-2xl font-bold font-serif text-slate-700">Google</span>
+                <span class="text-2xl font-bold font-sans tracking-tighter text-slate-700 italic">Amazon</span>
+                <span class="text-2xl font-bold font-sans text-slate-700">Microsoft</span>
+                <span class="text-2xl font-bold font-serif text-slate-700 tracking-tight">Spotify</span>
+                <span class="text-2xl font-bold font-sans text-slate-700">Netflix</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-24 bg-slate-50">
+        <div class="container mx-auto px-6">
+            <div class="text-center max-w-2xl mx-auto mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Why choose Resumify?</h2>
+                <p class="text-slate-600">We don't just format text; we help you tell your career story in a way that algorithms and humans love.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 group">
+                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-brand-600 mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-robot text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">AI Writer Assistant</h3>
+                    <p class="text-slate-600 leading-relaxed">Stuck on words? Our AI suggests professional bullet points tailored to your job title and industry.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 group">
+                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600 mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-filter text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">ATS-Friendly Designs</h3>
+                    <p class="text-slate-600 leading-relaxed">Don't get filtered out. Our templates are rigorously tested against Applicant Tracking Systems.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-100 group">
+                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center text-green-600 mb-6 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 mb-3">Real-time Preview</h3>
+                    <p class="text-slate-600 leading-relaxed">See changes instantly. Drag and drop sections, change colors, and adjust fonts with one click.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Templates Section -->
+    <section id="templates" class="py-24 bg-white relative">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+                <div class="max-w-xl">
+                    <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Templates for every career</h2>
+                    <p class="text-slate-600">Whether you're a creative designer or a corporate executive, we have a layout that fits your personal brand.</p>
+                </div>
+                <a href="/resume-eplorer" class="text-brand-600 font-semibold hover:text-brand-700 flex items-center gap-2">
+                    See all templates <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Template Card 1 -->
+                <div class="group relative bg-slate-100 rounded-xl overflow-hidden aspect-[1/1.4] shadow-inner">
+                    <!-- CSS Resume Representation -->
+                    <div class="absolute inset-4 bg-white shadow-sm p-3 opacity-90 transition-transform group-hover:scale-105 duration-500">
+                        <div class="h-2 w-1/3 bg-slate-800 mb-4"></div>
+                        <div class="grid grid-cols-3 gap-2 h-full">
+                            <div class="col-span-1 bg-slate-50 h-3/4"></div>
+                            <div class="col-span-2 space-y-2">
+                                <div class="h-1 bg-slate-200 w-full"></div>
+                                <div class="h-1 bg-slate-200 w-full"></div>
+                                <div class="h-1 bg-slate-200 w-5/6"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/40 transition-colors duration-300 flex items-center justify-center">
+                        <button class="bg-white text-slate-900 px-6 py-2 rounded-full font-semibold opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-lg">Use This</button>
+                    </div>
+                </div>
+
+                <!-- Template Card 2 -->
+                <div class="group relative bg-slate-100 rounded-xl overflow-hidden aspect-[1/1.4] shadow-inner">
+                    <div class="absolute inset-4 bg-white shadow-sm p-3 opacity-90 transition-transform group-hover:scale-105 duration-500">
+                        <div class="text-center mb-4">
+                            <div class="h-2 w-1/2 bg-slate-800 mx-auto"></div>
+                        </div>
+                        <div class="space-y-3 px-2">
+                            <div class="h-1 bg-slate-200 w-full"></div>
+                            <div class="h-1 bg-slate-200 w-full"></div>
+                            <div class="h-1 bg-slate-200 w-3/4"></div>
+                        </div>
+                    </div>
+                    <div class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/40 transition-colors duration-300 flex items-center justify-center">
+                        <button class="bg-white text-slate-900 px-6 py-2 rounded-full font-semibold opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-lg">Use This</button>
+                    </div>
+                </div>
+
+                <!-- Template Card 3 -->
+                <div class="group relative bg-slate-100 rounded-xl overflow-hidden aspect-[1/1.4] shadow-inner">
+                    <div class="absolute inset-4 bg-white shadow-sm p-3 opacity-90 transition-transform duration-500 flex flex-col">
+                         <div class="h-16 bg-blue-900 w-full mb-3"></div>
+                         <div class="flex-1 px-2 space-y-2">
+                             <div class="h-1 bg-slate-200 w-full"></div>
+                             <div class="h-1 bg-slate-200 w-4/5"></div>
+                         </div>
+                    </div>
+                    <div class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/40 transition-colors duration-300 flex items-center justify-center">
+                        <button class="bg-white text-slate-900 px-6 py-2.rounded-full font-semibold opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-lg">Use This</button>
+                    </div>
+                </div>
+
+                <!-- Template Card 4 -->
+                <div class="group relative bg-slate-100 rounded-xl overflow-hidden aspect-[1/1.4] shadow-inner">
+                    <div class="absolute inset-4 bg-white shadow-sm p-3 opacity-90 transition-transform duration-500">
+                        <div class="flex h-full gap-2">
+                            <div class="w-1/4 bg-slate-100 h-full"></div>
+                            <div class="w-3/4 h-full space-y-2 pt-4">
+                                <div class="h-2 w-1/2 bg-slate-800"></div>
+                                <div class="h-1 bg-slate-200 w-full"></div>
+                                <div class="h-1 bg-slate-200 w-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute inset-0 bg-slate-900/0 group-hover:bg-slate-900/40 transition-colors duration-300 flex items-center justify-center">
+                        <button class="bg-white text-slate-900 px-6 py-2 rounded-full font-semibold opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-lg">Use This</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="py-24 bg-slate-900 text-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">3 Simple Steps</h2>
+                <p class="text-slate-400">Go from blank page to hired in under 15 minutes.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-12 relative">
+                <!-- Connector Line (Desktop) -->
+                <div class="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-slate-700/50 -z-0"></div>
+
+                <!-- Step 1 -->
+                <div class="relative z-10 flex flex-col items-center text-center">
+                    <div class="w-24 h-24 bg-slate-800 border-4 border-slate-900 rounded-full flex items-center justify-center text-3xl font-bold text-brand-500 mb-6 shadow-xl">1</div>
+                    <h3 class="text-xl font-bold mb-3">Choose a Template</h3>
+                    <p class="text-slate-400">Pick from our library of professionally designed layouts.</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="relative z-10 flex flex-col items-center text-center">
+                    <div class="w-24 h-24 bg-slate-800 border-4 border-slate-900 rounded-full flex items-center justify-center text-3xl font-bold text-brand-500 mb-6 shadow-xl">2</div>
+                    <h3 class="text-xl font-bold mb-3">Fill in Details</h3>
+                    <p class="text-slate-400">Enter your info manually or import from LinkedIn. Use AI to polish text.</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="relative z-10 flex flex-col items-center text-center">
+                    <div class="w-24 h-24 bg-slate-800 border-4 border-slate-900 rounded-full flex items-center justify-center text-3xl font-bold text-brand-500 mb-6 shadow-xl">3</div>
+                    <h3 class="text-xl font-bold mb-3">Download & Apply</h3>
+                    <p class="text-slate-400">Export as PDF or Word. Start applying immediately.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="py-24 bg-blue-50">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-900 text-center mb-16">Loved by Job Seekers</h2>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Review 1 -->
+                <div class="bg-white p-8 rounded-2xl shadow-md border-t-4 border-brand-500">
+                    <div class="flex text-yellow-400 mb-4 text-sm">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-slate-600 mb-6 italic">"I was struggling to get interviews for months. I used Resumify to redo my CV, and I got calls from 3 companies the next week."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600">JD</div>
+                        <div>
+                            <p class="font-bold text-slate-900">John Doe</p>
+                            <p class="text-xs text-slate-500">Software Engineer</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review 2 -->
+                <div class="bg-white p-8 rounded-2xl shadow-md border-t-4 border-brand-500">
+                    <div class="flex text-yellow-400 mb-4 text-sm">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+                    </div>
+                    <p class="text-slate-600 mb-6 italic">"The AI suggestions are a game changer. It helped me rephrase my boring tasks into impressive achievements."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600">SM</div>
+                        <div>
+                            <p class="font-bold text-slate-900">Sarah Miller</p>
+                            <p class="text-xs text-slate-500">Marketing Manager</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review 3 -->
+                <div class="bg-white p-8 rounded-2xl shadow-md border-t-4 border-brand-500">
+                    <div class="flex text-yellow-400 mb-4 text-sm">
+                        <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i>
+                    </div>
+                    <p class="text-slate-600 mb-6 italic">"Clean, simple, and effective. The templates are actually readable and not over-designed."</p>
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-600">MC</div>
+                        <div>
+                            <p class="font-bold text-slate-900">Mike Chen</p>
+                            <p class="text-xs text-slate-500">Project Manager</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Footer -->
+    <section class="py-24 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="bg-gradient-to-br from-brand-600 to-purple-700 rounded-3xl p-10 md:p-20 text-center text-white shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                <div class="absolute bottom-0 left-0 w-64 h-64 bg-white opacity-10 rounded-full translate-y-1/2 -translate-x-1/2"></div>
+                
+                <h2 class="text-3xl md:text-5xl font-bold mb-6 relative z-10">Ready to land your dream job?</h2>
+                <p class="text-blue-100 text-lg mb-10 max-w-2xl mx-auto relative z-10">Join thousands of job seekers who found success with Resumify. Try it for free today.</p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4 relative z-10">
+                    <button class="bg-white text-brand-600 font-bold py-4 px-10 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all">Create Resume Free</button>
+                    <p class="text-sm text-blue-200 mt-2 sm:hidden">No credit card required</p>
+                </div>
+                <p class="text-sm text-blue-200 mt-6 hidden sm:block relative z-10">No credit card required • Cancel anytime</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-50 border-t border-slate-200 pt-16 pb-8">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-12 mb-12">
+                <div class="col-span-1 md:col-span-1">
+                    <a href="#" class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white">
+                            <i class="fa-solid fa-file-signature text-sm"></i>
+                        </div>
+                        <span class="text-lg font-bold text-slate-900">Resumify</span>
+                    </a>
+                    <p class="text-slate-500 text-sm leading-relaxed">Making job applications easier, one resume at a time. Built with <i class="fa-solid fa-heart text-red-500"></i> for job seekers everywhere.</p>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-slate-900 mb-4">Product</h4>
+                    <ul class="space-y-2 text-sm text-slate-500">
+                        <li><a href="#" class="hover:text-brand-600">Templates</a></li>
+                        <li><a href="#" class="hover:text-brand-600">Resume Examples</a></li>
+                        <li><a href="#" class="hover:text-brand-600">Cover Letter Builder</a></li>
+                        <li><a href="#" class="hover:text-brand-600">Pricing</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-slate-900 mb-4">Support</h4>
+                    <ul class="space-y-2 text-sm text-slate-500">
+                        <li><a href="#" class="hover:text-brand-600">Help Center</a></li>
+                        <li><a href="#" class="hover:text-brand-600">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-brand-600">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-brand-600">Terms of Service</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-slate-900 mb-4">Connect</h4>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-brand-600 hover:border-brand-600 transition-colors">
+                            <i class="fa-brands fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-brand-600 hover:border-brand-600 transition-colors">
+                            <i class="fa-brands fa-linkedin"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-500 hover:text-brand-600 hover:border-brand-600 transition-colors">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-slate-200 pt-8 text-center text-slate-400 text-sm">
+                &copy; 2023 Resumify Inc. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Interactions -->
+    <script>
+        // Mobile Menu Toggle
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+
+        btn.addEventListener('click', () => {
+            menu.classList.toggle('hidden');
+        });
+
+        // Sticky Navbar effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                navbar.classList.add('shadow-md');
+            } else {
+                navbar.classList.remove('shadow-md');
+            }
+        });
+
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fade-in-up');
+                    entry.target.style.opacity = "1";
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Select elements to animate
+        document.querySelectorAll('section > div > div').forEach((el) => {
+            if (!el.classList.contains('animate-fade-in-up')) {
+                // Add initial opacity 0 to prevent FOUC, but allow the first hero section to animate immediately
+                 // Check if it's not the hero section which already has animation classes
+                if(!el.closest('section').classList.contains('pt-32')) {
+                    el.style.opacity = "0";
+                    observer.observe(el);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

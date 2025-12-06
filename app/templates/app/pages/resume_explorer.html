@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Template Explorer</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        // Colors for Modern Template
+                        modern_primary: '#3b82f6', // Blue-500
+                        modern_secondary: '#1f2937', // Gray-800
+                        // Colors for Traditional Template
+                        traditional_primary: '#1f2937', // Gray-800
+                        traditional_line: '#d1d5db', // Gray-300
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Base styles for the explorer UI */
+        .template-card {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .template-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        /* Custom scrollbar for the template viewer for cleaner look */
+        #template-viewer {
+            overflow-y: auto;
+            max-height: 85vh; /* Limit height of the resume view */
+        }
+
+        /* --- MODERN TEMPLATE STYLES (Embedded) --- */
+        .modern-resume .section-header {
+            position: relative;
+            padding-bottom: 0.25rem;
+            margin-bottom: 0.5rem;
+        }
+        .modern-resume .section-header::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 50%;
+            height: 2px;
+            background-color: #3b82f6; /* modern_primary */
+        }
+        .modern-resume .resume-list { list-style: none; padding-left: 0; }
+        .modern-resume .resume-list li { position: relative; padding-left: 1rem; margin-bottom: 0.3rem; line-height: 1.4; }
+        .modern-resume .resume-list li::before {
+            content: '•';
+            color: #3b82f6; /* modern_primary */
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+
+        /* --- TRADITIONALIST TEMPLATE STYLES (Embedded) --- */
+        .traditional-resume .section-separator {
+            border-bottom: 1px solid #d1d5db; /* traditional_line */
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.25rem;
+        }
+        .traditional-resume .resume-list { list-style: none; padding-left: 0; margin-left: 0; }
+        .traditional-resume .resume-list li { position: relative; padding-left: 1rem; margin-bottom: 0.3rem; line-height: 1.4; }
+        .traditional-resume .resume-list li::before {
+            content: '–';
+            color: #1f2937; /* traditional_primary */
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-100 p-4 min-h-screen">
+
+    <!-- Main Application Container -->
+    <div class="max-w-6xl mx-auto">
+        
+        <h1 class="text-3xl font-bold text-center text-gray-800 my-6">
+            Resume Template Explorer
+        </h1>
+
+        <!-- Template Selection Bar -->
+        <div id="template-selector" class="flex flex-col lg:flex-row gap-6 mb-8">
+            
+            <!-- Modern Template Card -->
+            <a href="/resume-eplorer/1/" class="template-card flex-1 bg-white p-6 rounded-xl shadow-lg border-2 border-transparent hover:border-blue-500 block">
+                <h2 class="text-2xl font-semibold mb-2 text-gray-800">Modern</h2>
+                <p class="text-gray-600 mb-4">Two-column layout, sharp lines, and a blue accent. Ideal for tech or creative roles.</p>
+                <div class="h-20 bg-gray-50 p-2 border border-gray-200 rounded">
+                    <!-- Preview snippet -->
+                    <div class="flex h-full">
+                        <div class="w-1/3 bg-gray-100 p-1 rounded-l">
+                            <div class="h-1 w-full bg-blue-500 mb-1"></div>
+                            <div class="h-2 bg-gray-800 w-2/3 mb-2"></div>
+                            <div class="h-1 bg-gray-400 w-full mb-1"></div>
+                            <div class="h-1 bg-gray-400 w-4/5"></div>
+                        </div>
+                        <div class="w-2/3 p-1">
+                            <div class="h-3 bg-blue-500 mb-2"></div>
+                            <div class="h-1 w-full bg-gray-400 mb-1"></div>
+                            <div class="h-1 w-5/6 bg-gray-400"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 text-blue-600 font-semibold text-sm">View Resume →</div>
+            </a>
+
+            <!-- Traditionalist Template Card -->
+            <a href="/resume-eplorer/2/" class="template-card flex-1 bg-white p-6 rounded-xl shadow-lg border-2 border-transparent hover:border-gray-800 block">
+                <h2 class="text-2xl font-semibold mb-2 text-gray-800">Traditionalist</h2>
+                <p class="text-gray-600 mb-4">Single-column layout, minimalist, and ATS-friendly. Ideal for formal or corporate roles.</p>
+                <div class="h-20 bg-gray-50 p-2 border border-gray-200 rounded">
+                    <!-- Preview snippet -->
+                    <div class="h-full">
+                        <div class="h-3 bg-gray-800 mb-2 w-1/2 mx-auto"></div>
+                        <div class="h-1 w-full bg-gray-400 mb-1"></div>
+                        <div class="h-1 w-5/6 bg-gray-400 mb-2"></div>
+                        <div class="h-1 w-full bg-gray-400 mb-1"></div>
+                        <div class="h-1 w-4/5 bg-gray-400"></div>
+                    </div>
+                </div>
+                <div class="mt-4 text-blue-600 font-semibold text-sm">View Resume →</div>
+            </a>
+
+            <!-- Designer/Creative Template Card (New) -->
+            <a href="/resume-eplorer/3/" class="template-card flex-1 bg-white p-6 rounded-xl shadow-lg border-2 border-transparent hover:border-purple-500 block">
+                <h2 class="text-2xl font-semibold mb-2 text-gray-800">Designer</h2>
+                <p class="text-gray-600 mb-4">Modern design-focused layout with visual appeal. Perfect for creative professionals.</p>
+                <div class="h-20 bg-gray-50 p-2 border border-gray-200 rounded">
+                    <!-- Preview snippet -->
+                    <div class="flex flex-col h-full gap-1">
+                        <div class="h-3 bg-blue-500 rounded w-3/4"></div>
+                        <div class="h-1 w-full bg-gray-300"></div>
+                        <div class="h-1 w-4/5 bg-gray-300"></div>
+                        <div class="flex gap-1 flex-1">
+                            <div class="flex-1 bg-purple-100 rounded"></div>
+                            <div class="flex-1 bg-blue-100 rounded"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 text-blue-600 font-semibold text-sm">View Resume →</div>
+            </a>
+        </div>
+
+        <!-- Info Section -->
+        <div class="bg-blue-50 rounded-xl p-6 border border-blue-200">
+            <h2 class="text-xl font-semibold text-gray-800 mb-2">Choose Your Resume Template</h2>
+            <p class="text-gray-700">Click on any template card above to view the complete resume. Each template showcases a different design style suitable for various industries and career levels.</p>
+        </div>
+    </div>
+
+    <script>
+        // --- TEMPLATE CONTENT DEFINITIONS ---
+
+        // Modern Template Content (Two-Column, Blue Accent)
+        const MODERN_TEMPLATE = `
+            <div class="modern-resume font-sans w-full max-w-4xl mx-auto p-0 text-gray-800">
+                <header class="pb-6 border-b-2 border-modern_primary">
+                    <h1 class="text-4xl font-extrabold text-modern_secondary tracking-tight mb-1">
+                        LIAM O'CONNELL
+                    </h1>
+                    <p class="text-xl font-medium text-modern_primary mb-3">
+                        Senior Software Engineer | Full-Stack Development
+                    </p>
+                    <div class="flex flex-wrap gap-x-6 gap-y-1 text-sm text-gray-600">
+                        <span class="flex items-center gap-1"><i class="fa-solid fa-envelope text-modern_primary text-xs"></i> liam.oconnell@email.com</span>
+                        <span class="flex items-center gap-1"><i class="fa-solid fa-phone text-modern_primary text-xs"></i> (555) 123-4567</span>
+                        <span class="flex items-center gap-1"><i class="fa-brands fa-linkedin text-modern_primary text-xs"></i> /liamoconnelltech</span>
+                    </div>
+                </header>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-6">
+                    <div class="lg:col-span-1 space-y-6">
+                        <section>
+                            <h2 class="section-header text-lg font-bold uppercase text-modern_secondary">Skills</h2>
+                            <div class="text-sm space-y-2">
+                                <div><p class="font-semibold text-gray-800">Languages:</p><p class="text-gray-600">JS, TS, Python, SQL, React, Node.js</p></div>
+                                <div><p class="font-semibold text-gray-800">DevOps:</p><p class="text-gray-600">AWS (S3, Lambda), Docker, Terraform</p></div>
+                            </div>
+                        </section>
+                        <section>
+                            <h2 class="section-header text-lg font-bold uppercase text-modern_secondary">Education</h2>
+                            <div class="text-sm">
+                                <h3 class="font-semibold text-gray-800">MS in Computer Science</h3>
+                                <p class="text-gray-600">MIT | May 2017</p>
+                            </div>
+                        </section>
+                    </div>
+
+                    <div class="lg:col-span-2 space-y-8">
+                        <section>
+                            <h2 class="section-header text-lg font-bold uppercase text-modern_secondary">Summary</h2>
+                            <p class="text-gray-700 text-sm leading-relaxed">
+                                Highly accomplished Senior Software Engineer (8+ years) specializing in designing, developing, and deploying high-scale, cloud-native applications. Proficient in the MERN stack and microservices, with proven ability to lead teams and drive complex projects to successful launch.
+                            </p>
+                        </section>
+                        <section>
+                            <h2 class="section-header text-lg font-bold uppercase text-modern_secondary">Experience</h2>
+                            <div class="mb-5">
+                                <div class="flex justify-between items-baseline mb-1">
+                                    <h3 class="text-base font-bold text-gray-800">Senior Software Engineer, Tech Innovators Inc.</h3>
+                                    <span class="text-sm text-gray-600 font-medium">May 2019 – Present</span>
+                                </div>
+                                <ul class="resume-list text-sm text-gray-700">
+                                    <li>Led a team of 5 engineers in migrating to microservices (Docker/K8s), resulting in a 40% reduction in average API latency.</li>
+                                    <li>Implemented a real-time data streaming pipeline using Kafka and Node.js.</li>
+                                </ul>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Traditionalist Template Content (Single-Column, Minimalist)
+        const TRADITIONAL_TEMPLATE = `
+            <div class="traditional-resume font-sans w-full max-w-4xl mx-auto p-0 text-gray-800">
+                <header class="text-center pb-4 mb-4 border-b border-gray-400">
+                    <h1 class="text-3xl font-extrabold text-traditional_primary tracking-wider uppercase mb-1">
+                        LIAM O'CONNELL
+                    </h1>
+                    <p class="text-lg font-medium text-gray-600 mb-3">
+                        Senior Software Engineer | Full-Stack Development & Cloud Architecture
+                    </p>
+                    <div class="flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm text-gray-600">
+                        <span>liam.oconnell@email.com</span>
+                        <span>(555) 123-4567</span>
+                        <span>linkedin.com/in/liamoconnelltech</span>
+                    </div>
+                </header>
+
+                <div class="space-y-6">
+                    <section>
+                        <h2 class="section-separator text-xl font-bold uppercase text-traditional_primary">Summary</h2>
+                        <p class="text-gray-700 text-sm leading-relaxed">
+                            Highly accomplished Senior Software Engineer (8+ years) specializing in designing, developing, and deploying high-scale, cloud-native applications. Proven ability to lead development teams and drive complex projects from conception through to successful launch.
+                        </p>
+                    </section>
+
+                    <section>
+                        <h2 class="section-separator text-xl font-bold uppercase text-traditional_primary">Experience</h2>
+                        <div class="mb-5 text-sm">
+                            <div class="flex justify-between items-baseline mb-0.5">
+                                <h3 class="text-base font-bold text-gray-800">Senior Software Engineer <span class="text-gray-600 font-normal">| Tech Innovators Inc.</span></h3>
+                                <span class="font-medium text-gray-600 italic">May 2019 – Present</span>
+                            </div>
+                            <ul class="resume-list text-gray-700">
+                                <li>Led a team of 5 engineers in migrating to microservices, resulting in a 40% reduction in average API latency.</li>
+                                <li>Implemented a real-time data streaming pipeline using Kafka and Node.js.</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <section>
+                        <h2 class="section-separator text-xl font-bold uppercase text-traditional_primary">Technical Skills</h2>
+                        <div class="text-sm space-y-1">
+                            <p class="text-gray-700"><span class="font-semibold text-gray-800">Languages & Frameworks:</span> JS, TS, Python, SQL, React, Node.js</p>
+                            <p class="text-gray-700"><span class="font-semibold text-gray-800">Cloud & DevOps:</span> AWS, Docker, K8s, Terraform</p>
+                        </div>
+                    </section>
+                    
+                    <section>
+                        <h2 class="section-separator text-xl font-bold uppercase text-traditional_primary">Education</h2>
+                        <div class="text-sm">
+                            <h3 class="font-semibold text-gray-800">Master of Science in Computer Science</h3>
+                            <p class="text-gray-600">MIT | May 2017</p>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        `;
+
+        // --- JS LOGIC ---
+        const viewer = document.getElementById('template-viewer');
+        const selector = document.getElementById('template-selector');
+        const viewerTitle = document.getElementById('viewer-title');
+        const backButton = document.getElementById('back-button');
+        const initialMessage = document.getElementById('initial-message');
+        const cardModern = document.getElementById('card-modern');
+        const cardTraditional = document.getElementById('card-traditional');
+
+        function loadTemplate(templateType) {
+            let content;
+            let title;
+            
+            if (templateType === 'modern') {
+                content = MODERN_TEMPLATE;
+                title = 'Modern Professional Template Preview';
+                cardModern.classList.add('border-modern_primary');
+                cardTraditional.classList.remove('border-traditional_primary');
+            } else if (templateType === 'traditional') {
+                content = TRADITIONAL_TEMPLATE;
+                title = 'Traditionalist Minimalist Template Preview';
+                cardTraditional.classList.add('border-traditional_primary');
+                cardModern.classList.remove('border-modern_primary');
+            } else {
+                return;
+            }
+
+            viewer.innerHTML = content;
+            viewerTitle.textContent = title;
+            selector.classList.add('lg:hidden'); // Hide selector on desktop
+            backButton.classList.remove('hidden');
+            initialMessage.classList.add('hidden');
+            viewer.scrollTop = 0; // Scroll to top of the new content
+        }
+
+        function resetView() {
+            viewer.innerHTML = '';
+            viewerTitle.textContent = 'Select a Template to Preview';
+            selector.classList.remove('lg:hidden'); // Show selector
+            backButton.classList.add('hidden');
+            initialMessage.classList.remove('hidden');
+            cardModern.classList.remove('border-modern_primary');
+            cardTraditional.classList.remove('border-traditional_primary');
+        }
+
+        // Initialize with a default selection for mobile view if preferred, 
+        // but for an explorer, keeping it neutral is better.
+        // loadTemplate('modern'); 
+    </script>
+
+</body>
+</html>

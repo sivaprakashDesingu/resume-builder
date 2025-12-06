@@ -1,0 +1,12 @@
+Watching for file changes with StatReloader
+[06/Dec/2025 08:48:44] "HEAD / HTTP/1.1" 200 0
+[06/Dec/2025 08:49:59] "GET / HTTP/1.1" 200 35650
+Not Found: /favicon.ico
+[06/Dec/2025 08:50:00] "GET /favicon.ico HTTP/1.1" 404 4524
+[06/Dec/2025 08:50:01] "GET /resume-eplorer/ HTTP/1.1" 200 18450
+[06/Dec/2025 08:50:02] "GET /resume-eplorer/2/ HTTP/1.1" 200 2075
+[06/Dec/2025 08:50:04] "GET /resume-eplorer/1/ HTTP/1.1" 200 9909
+[06/Dec/2025 08:50:09] "GET /resume-eplorer/2/ HTTP/1.1" 200 2075
+[06/Dec/2025 08:50:12] "GET /resume-eplorer/3/ HTTP/1.1" 200 7281
+[06/Dec/2025 08:50:16] "GET /resume-eplorer/1/ HTTP/1.1" 200 9909
+[06/Dec/2025 08:50:21] "GET /resume-eplorer/1/ HTTP/1.1" 200 9909
