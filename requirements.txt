@@ -1,0 +1,2 @@
+# Minimal dependencies for development
+Django>=4.2,<5

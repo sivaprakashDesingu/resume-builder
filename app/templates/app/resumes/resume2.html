@@ -3,36 +3,248 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Traditionalist Resume: Liam O'Connell</title>
-    <!-- Load Tailwind CSS -->
+    <title>Modern Creative Resume: Sarah Chen</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Font Awesome for icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- Use Inter font family -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Lato', sans-serif; background: #f5f5f5; }
+        .heading { font-family: 'Playfair Display', serif; }
+        .sidebar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .accent-purple { color: #667eea; }
+        .badge { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    </style>
 </head>
-<body class="font-sans bg-gray-100 p-4 sm:p-8">
-    <div class="resume-container bg-white mx-auto max-w-4xl p-6 sm:p-10 lg:p-12 shadow-xl border border-gray-200">
-        <header class="text-center pb-4 mb-4 border-b border-gray-400">
-            <h1 class="text-3xl font-extrabold tracking-wider uppercase mb-1">LIAM O'CONNELL</h1>
-            <p class="text-lg font-medium mb-3">Senior Software Engineer | Full-Stack Development & Cloud Architecture</p>
-        </header>
-        <div class="space-y-6">
-            <section>
-                <h2 class="text-xl font-bold uppercase mb-2">Professional Summary</h2>
-                <p>Highly accomplished and results-driven Senior Software Engineer with 8+ years of experience in designing, developing, and deploying high-scale, cloud-native applications.</p>
-            </section>
-            <section>
-                <h2 class="text-xl font-bold uppercase mb-2">Experience</h2>
-                <div>
-                    <h3 class="font-bold">Senior Software Engineer — Tech Innovators Inc.</h3>
-                    <p class="text-sm italic">May 2019 – Present — San Francisco, CA</p>
-                    <ul>
-                        <li>Led migration to microservices (Docker/K8s), reducing API latency by 40%.</li>
-                        <li>Built real-time pipelines with Kafka and Node.js.</li>
-                    </ul>
+<body class="font-sans">
+    <div class="resume-container max-w-5xl mx-auto mt-8 mb-8">
+        <div class="flex rounded-lg overflow-hidden shadow-2xl">
+            <!-- Left Sidebar - Dark Purple Gradient -->
+            <div class="sidebar w-80 p-10 text-white">
+                <!-- Profile -->
+                <div class="mb-10 text-center">
+                    <div class="w-24 h-24 mx-auto mb-4 rounded-full bg-white/20 flex items-center justify-center backdrop-blur">
+                        <i class="fas fa-user text-4xl text-white/70"></i>
+                    </div>
+                    <h1 class="heading text-3xl font-bold mb-2">Sarah Chen</h1>
+                    <p class="text-purple-100 font-light text-sm tracking-widest uppercase">Product Manager</p>
                 </div>
-            </section>
+
+                <!-- Contact -->
+                <div class="mb-8 pb-8 border-b border-white/20">
+                    <h3 class="heading text-sm font-bold mb-4 tracking-widest uppercase">Contact</h3>
+                    <div class="space-y-3 text-sm text-purple-50">
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-envelope w-5"></i>
+                            <span>sarah.chen@email.com</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-phone w-5"></i>
+                            <span>(415) 555-7890</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <i class="fas fa-map-pin w-5"></i>
+                            <span>San Francisco, CA</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skills -->
+                <div class="mb-8 pb-8 border-b border-white/20">
+                    <h3 class="heading text-sm font-bold mb-4 tracking-widest uppercase">Skills</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="text-xs bg-white/20 backdrop-blur px-3 py-1 rounded-full">Product Strategy</span>
+                        <span class="text-xs bg-white/20 backdrop-blur px-3 py-1 rounded-full">User Research</span>
+                        <span class="text-xs bg-white/20 backdrop-blur px-3 py-1 rounded-full">Analytics</span>
+                        <span class="text-xs bg-white/20 backdrop-blur px-3 py-1 rounded-full">Leadership</span>
+                        <span class="text-xs bg-white/20 backdrop-blur px-3 py-1 rounded-full">Data-Driven</span>
+                        <span class="text-xs bg-white/20 backdrop-blur px-3 py-1 rounded-full">Roadmapping</span>
+                    </div>
+                </div>
+
+                <!-- Education -->
+                <div>
+                    <h3 class="heading text-sm font-bold mb-4 tracking-widest uppercase">Education</h3>
+                    <div class="space-y-4 text-sm">
+                        <div>
+                            <p class="font-bold text-white">MBA</p>
+                            <p class="text-purple-100 text-xs">Stanford University</p>
+                            <p class="text-purple-200 text-xs">2018</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-white">B.S. Economics</p>
+                            <p class="text-purple-100 text-xs">UC Berkeley</p>
+                            <p class="text-purple-200 text-xs">2016</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Content - Clean White -->
+            <div class="flex-1 bg-white p-12">
+                <!-- Summary -->
+                <section class="mb-10">
+                    <h2 class="heading text-2xl font-bold accent-purple mb-3">Professional Summary</h2>
+                    <p class="text-gray-700 leading-relaxed">
+                        Strategic product leader with 6+ years driving innovation and revenue growth at fast-scaling tech companies. Proven ability to define go-to-market strategies, build high-performing teams, and deliver enterprise solutions. Track record of launching products generating $50M+ in annual revenue.
+                    </p>
+                </section>
+
+                <!-- Experience -->
+                <section class="mb-10">
+                    <h2 class="heading text-2xl font-bold accent-purple mb-5">Professional Experience</h2>
+                    <div class="space-y-6">
+                        <!-- Job 1 -->
+                        <div class="border-l-4 border-purple-400 pl-5 pb-5">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="heading text-lg font-bold text-gray-900">Senior Product Manager</h3>
+                                <span class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-semibold">Present</span>
+                            </div>
+                            <p class="accent-purple font-semibold text-sm mb-1">Tech Innovations Corp • San Francisco, CA</p>
+                            <p class="text-xs text-gray-500 mb-3">Jan 2023 – Present</p>
+                            <ul class="text-sm text-gray-700 space-y-2">
+                                <li><span class="accent-purple font-bold">→</span> Led AI-powered analytics platform launch generating $12M ARR in Year 1</li>
+                                <li><span class="accent-purple font-bold">→</span> Managed product strategy for 3 lines serving 500+ enterprise customers; 40% YoY growth</li>
+                                <li><span class="accent-purple font-bold">→</span> Increased feature adoption by 65% through data-driven prioritization</li>
+                            </ul>
+                        </div>
+
+                        <!-- Job 2 -->
+                        <div class="border-l-4 border-purple-300 pl-5 pb-5">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="heading text-lg font-bold text-gray-900">Product Manager</h3>
+                                <span class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-semibold">2 yrs</span>
+                            </div>
+                            <p class="accent-purple font-semibold text-sm mb-1">CloudScale Systems • San Francisco, CA</p>
+                            <p class="text-xs text-gray-500 mb-3">Jun 2021 – Dec 2022</p>
+                            <ul class="text-sm text-gray-700 space-y-2">
+                                <li><span class="accent-purple font-bold">→</span> Managed $25M product portfolio with 15-person engineering team</li>
+                                <li><span class="accent-purple font-bold">→</span> Optimized pricing strategy resulting in 32% revenue increase</li>
+                                <li><span class="accent-purple font-bold">→</span> Conducted 200+ customer interviews; implemented top features</li>
+                            </ul>
+                        </div>
+
+                        <!-- Job 3 -->
+                        <div class="border-l-4 border-purple-200 pl-5">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="heading text-lg font-bold text-gray-900">Associate Product Manager</h3>
+                                <span class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full font-semibold">2 yrs</span>
+                            </div>
+                            <p class="accent-purple font-semibold text-sm mb-1">Digital Ventures Inc • San Jose, CA</p>
+                            <p class="text-xs text-gray-500 mb-3">Jul 2019 – May 2021</p>
+                            <ul class="text-sm text-gray-700 space-y-2">
+                                <li><span class="accent-purple font-bold">→</span> Launched 8 features; achieved 2.5M+ downloads in 6 months</li>
+                                <li><span class="accent-purple font-bold">→</span> Reduced feature delivery time by 40% through process optimization</li>
+                                <li><span class="accent-purple font-bold">→</span> Implemented analytics framework tracking 50+ key metrics</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Technical Skills with Expertise Bars -->
+                <section class="mb-10">
+                    <h2 class="heading text-2xl font-bold accent-purple mb-5">Technical Skills & Expertise</h2>
+                    <div class="space-y-4">
+                        <!-- Product Strategy -->
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="font-semibold text-gray-800">Product Strategy & Roadmapping</span>
+                                <span class="text-xs text-purple-600 font-bold">95%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-purple-400 to-purple-600 h-2 rounded-full" style="width: 95%"></div>
+                            </div>
+                        </div>
+
+                        <!-- User Research -->
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="font-semibold text-gray-800">User Research & UX Design</span>
+                                <span class="text-xs text-purple-600 font-bold">90%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-purple-400 to-purple-600 h-2 rounded-full" style="width: 90%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Data Analytics -->
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="font-semibold text-gray-800">Data Analytics & Metrics</span>
+                                <span class="text-xs text-purple-600 font-bold">88%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-purple-400 to-purple-600 h-2 rounded-full" style="width: 88%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Cross-functional Leadership -->
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="font-semibold text-gray-800">Cross-functional Leadership</span>
+                                <span class="text-xs text-purple-600 font-bold">92%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-purple-400 to-purple-600 h-2 rounded-full" style="width: 92%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Market Analysis -->
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="font-semibold text-gray-800">Market Analysis & Competitive Intelligence</span>
+                                <span class="text-xs text-purple-600 font-bold">85%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-purple-400 to-purple-600 h-2 rounded-full" style="width: 85%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Agile Methodology -->
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="font-semibold text-gray-800">Agile & Scrum Methodologies</span>
+                                <span class="text-xs text-purple-600 font-bold">87%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-purple-400 to-purple-600 h-2 rounded-full" style="width: 87%"></div>
+                            </div>
+                        </div>
+
+                        <!-- SQL & Analytics Tools -->
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="font-semibold text-gray-800">SQL, Tableau & Data Tools</span>
+                                <span class="text-xs text-purple-600 font-bold">80%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-purple-400 to-purple-600 h-2 rounded-full" style="width: 80%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Go-to-Market Strategy -->
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="font-semibold text-gray-800">Go-to-Market Strategy</span>
+                                <span class="text-xs text-purple-600 font-bold">86%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-purple-400 to-purple-600 h-2 rounded-full" style="width: 86%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Stakeholder Management -->
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="font-semibold text-gray-800">Stakeholder Management & Communication</span>
+                                <span class="text-xs text-purple-600 font-bold">91%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-gradient-to-r from-purple-400 to-purple-600 h-2 rounded-full" style="width: 91%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
         </div>
     </div>
 </body>

@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Editor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            {% if template_id == 1 %}
+                --primary-color: #10b981;
+                --primary-dark: #059669;
+                --primary-light: #d1fae5;
+                --border-color: #10b981;
+                --text-primary: #059669;
+            {% elif template_id == 2 %}
+                --primary-color: #667eea;
+                --primary-dark: #764ba2;
+                --primary-light: #eef2ff;
+                --border-color: #667eea;
+                --text-primary: #667eea;
+            {% endif %}
+        }
+
+        * {
+            --tw-border-color: var(--border-color);
+        }
+
+        .resume-preview {
+            border: 1px solid #e5e7eb;
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+        
+        .editor-panel {
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+        
+        .editor-header {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            background: white;
+            border-bottom: 2px solid var(--primary-color);
+            padding: 1rem 1.5rem;
+            margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+        }
+        
+        .editor-header h3 {
+            margin: 0;
+            flex-grow: 1;
+            color: var(--primary-dark);
+        }
+        
+        .editor-header button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #6b7280;
+        }
+        
+        .editor-header button:hover {
+            color: #ef4444;
+            background-color: rgba(239, 68, 68, 0.1);
+            border-radius: 0.375rem;
+        }
+        
+        .form-section {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background: #f9fafb;
+            transition: all 0.3s ease;
+        }
+        
+        .form-section.active {
+            background: var(--primary-light);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .preview-section {
+            padding: 1rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .preview-section:hover {
+            background-color: rgba(102, 126, 234, 0.05);
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .preview-section.clickable {
+            position: relative;
+        }
+        
+        .preview-section.clickable::after {
+            content: '✎ Click to edit';
+            position: absolute;
+            top: 4px;
+            right: 8px;
+            font-size: 0.75rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .preview-section.clickable:hover::after {
+            opacity: 1;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #374151;
+            font-size: 0.875rem;
+        }
+        
+        .form-group .relative {
+            position: relative;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-family: inherit;
+        }
+        
+        .form-group select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-family: inherit;
+            background-color: white;
+            cursor: pointer;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #10b981;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        
+        #titleDropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 0.25rem;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 50;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        #titleDropdown.hidden {
+            display: none !important;
+        }
+        
+        #filterInput {
+            width: 100%;
+            padding: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.875rem;
+            outline: none;
+        }
+        
+        #filterInput:focus {
+            background-color: #f9fafb;
+            border-bottom-color: #10b981;
+        }
+        
+        .dropdown-category {
+            padding-top: 0.5rem;
+        }
+        
+        .category-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #6b7280;
+            padding: 0.5rem 0.75rem 0.25rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .title-option {
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            transition: background-color 0.15s;
+            font-size: 0.875rem;
+            white-space: nowrap;
+        }
+        
+        .title-option:hover {
+            background-color: rgba(16, 185, 129, 0.1);
+        }
+        
+        .title-option.bg-emerald-50 {
+            background-color: #f0fdf4;
+            border-left: 4px solid #10b981;
+            padding: 0.75rem;
+            font-weight: 500;
+            color: #059669;
+            white-space: normal;
+        }
+        
+        .title-option.bg-emerald-50:hover {
+            background-color: #dcfce7;
+        }
+        
+        .title-option.hidden {
+            display: none !important;
+        }
+        
+        .no-results {
+            padding: 1rem;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }
+        
+        .btn-add {
+            background-color: #10b981;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            border: none;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-add:hover {
+            background-color: #059669;
+        }
+        
+        .btn-remove {
+            background-color: #ef4444;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            border: none;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-remove:hover {
+            background-color: #dc2626;
+        }
+        
+        .entry-item {
+            background: white;
+            padding: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.375rem;
+            margin-bottom: 0.75rem;
+            position: relative;
+        }
+        
+        .entry-item .btn-remove {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+        }
+        
+        /* Template 2 specific styling */
+        body[data-template="2"] .editor-header {
+            border-bottom-color: #667eea;
+        }
+        
+        body[data-template="2"] .editor-header h3 {
+            color: #667eea;
+        }
+        
+        body[data-template="2"] .form-section.active {
+            background-color: #eef2ff;
+            border-color: #667eea;
+        }
+        
+        body[data-template="2"] .preview-section:hover {
+            border-left-color: #667eea;
+        }
+        
+        body[data-template="2"] .preview-section.clickable::after {
+            color: #667eea;
+        }
+        
+        body[data-template="2"] .btn-add {
+            background-color: #667eea;
+        }
+        
+        body[data-template="2"] .btn-add:hover {
+            background-color: #764ba2;
+        }
+    </style>
+</head>
+<body class="font-sans bg-gray-100" data-template="{{ template_id }}">
+    <div class="flex flex-col h-screen">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-6 shadow-lg flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Resume Editor - Template {{ template_id }}</h1>
+            <div class="flex gap-4">
+                <a href="{% url 'resume_explorer' %}" style="background-color: var(--primary-dark);" class="hover:opacity-80 px-4 py-2 rounded-lg transition text-white">Back to Templates</a>
+                <button onclick="downloadResume()" style="color: var(--primary-color);" class="bg-white hover:bg-gray-100 font-semibold px-4 py-2 rounded-lg transition">Download PDF</button>
+            </div>
+        </div>
+
+        <!-- Main Container -->
+        <div class="flex flex-1 overflow-hidden">
+            <!-- Full Resume Preview (shown by default) -->
+            <div id="resumePreviewContainer" class="w-full bg-gray-200 p-4 overflow-auto transition-all duration-300">
+                <div class="resume-preview bg-white shadow-lg rounded-lg" id="resumePreview">
+                    <!-- Resume content will be rendered here -->
+                    <div class="p-8 sm:p-12">
+                        <!-- Header Section -->
+                        <div class="mb-6 pb-6 preview-section clickable" style="border-bottom: 2px solid var(--primary-color);" onclick="scrollToForm('basicInfo')">
+                            <h1 class="text-4xl font-bold text-gray-800 mb-2" id="previewName">Your Name</h1>
+                            <p class="text-lg mb-4 font-semibold" id="previewTitle" style="color: var(--primary-color);">Your Professional Title</p>
+                            <div class="flex flex-wrap gap-6 text-sm text-gray-700">
+                                <span id="previewEmail"><i class="fas fa-envelope mr-2"></i>email@example.com</span>
+                                <span id="previewPhone"><i class="fas fa-phone mr-2"></i>+1 (555) 123-4567</span>
+                                <span id="previewLocation"><i class="fas fa-map-marker-alt mr-2"></i>City, State</span>
+                            </div>
+                        </div>
+
+                        <!-- Professional Summary -->
+                        <div class="mb-6 preview-section clickable" onclick="scrollToForm('summary-section')">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-3 pb-2" style="border-bottom: 2px solid var(--primary-color);">Professional Summary</h2>
+                            <p class="text-gray-700 leading-relaxed" id="previewSummary">Enter your professional summary here.</p>
+                        </div>
+
+                        <!-- Professional Experience -->
+                        <div class="mb-6 preview-section clickable" onclick="scrollToForm('experience-section')">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-3 pb-2" style="border-bottom: 2px solid var(--primary-color);">Professional Experience</h2>
+                            <div id="previewExperience" class="space-y-4">
+                                <!-- Experience entries will be added here -->
+                            </div>
+                        </div>
+
+                        <!-- Technical Skills -->
+                        <div class="mb-6 preview-section clickable" onclick="scrollToForm('skills-section')">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-3 pb-2" style="border-bottom: 2px solid var(--primary-color);">Technical Skills</h2>
+                            <div id="previewSkills" class="space-y-3">
+                                <p class="text-gray-700 text-sm">Add your technical skills here.</p>
+                            </div>
+                        </div>
+
+                        <!-- Education -->
+                        <div class="preview-section clickable" onclick="scrollToForm('education-section')">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-3 pb-2" style="border-bottom: 2px solid var(--primary-color);">Education</h2>
+                            <div id="previewEducation" class="space-y-4">
+                                <!-- Education entries will be added here -->
+                            </div>
+                        </div>
+
+                        <!-- Custom Sections -->
+                        <div id="previewCustomSections"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Editor Panel (hidden by default, shows on section click) -->
+            <div id="editorContainer" class="hidden w-1/2 bg-white editor-panel border-l border-gray-300 transition-all duration-300">
+                <div class="editor-header">
+                    <h3 class="text-lg font-bold text-gray-800">Edit Section</h3>
+                    <button type="button" onclick="closeEditorPanel()" class="text-gray-600 hover:text-red-600 transition" title="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="p-6">
+                    <form id="resumeForm" class="space-y-4">
+                    <!-- Basic Information -->
+                    <div class="form-section" id="basicInfo">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Basic Information</h3>
+                        
+                        <div class="form-group">
+                            <label for="fullName">Full Name</label>
+                            <input type="text" id="fullName" placeholder="Your Full Name" class="form-control" value="{{ fullName }}" onchange="updatePreview()">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="professionalTitle">Professional Title</label>
+                            <div class="relative">
+                                <input type="text" id="professionalTitle" placeholder="Select or type a title" class="form-control pr-10" value="{{ professionalTitle }}" onchange="updatePreview()" oninput="showTitleSuggestions()" autocomplete="off">
+                                <button type="button" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer" style="color: var(--primary-color);" onclick="toggleTitleDropdown(); return false;">
+                                    <i class="fas fa-chevron-down text-lg"></i>
+                                </button>
+                                <div id="titleDropdown" class="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-xl max-h-64 overflow-y-auto z-50">
+                                    <input type="text" id="filterInput" placeholder="Search or type a title..." autocomplete="off">
+                                    <div id="customProfessionOption" style="display: none; padding: 0.5rem;"></div>
+                                    <div id="dropdownOptions">
+                                        <div class="dropdown-category">
+                                            <div class="category-label">Engineering</div>
+                                            <div class="title-option" onclick="selectTitle('Software Engineer')">Software Engineer</div>
+                                            <div class="title-option" onclick="selectTitle('Senior Software Engineer')">Senior Software Engineer</div>
+                                            <div class="title-option" onclick="selectTitle('Lead Software Engineer')">Lead Software Engineer</div>
+                                            <div class="title-option" onclick="selectTitle('Principal Engineer')">Principal Engineer</div>
+                                            <div class="title-option" onclick="selectTitle('Full-Stack Developer')">Full-Stack Developer</div>
+                                            <div class="title-option" onclick="selectTitle('Frontend Developer')">Frontend Developer</div>
+                                            <div class="title-option" onclick="selectTitle('Backend Developer')">Backend Developer</div>
+                                            <div class="title-option" onclick="selectTitle('DevOps Engineer')">DevOps Engineer</div>
+                                            <div class="title-option" onclick="selectTitle('Cloud Architect')">Cloud Architect</div>
+                                        </div>
+                                        
+                                        <div class="dropdown-category">
+                                            <div class="category-label">Data & Analytics</div>
+                                            <div class="title-option" onclick="selectTitle('Data Scientist')">Data Scientist</div>
+                                            <div class="title-option" onclick="selectTitle('Data Engineer')">Data Engineer</div>
+                                            <div class="title-option" onclick="selectTitle('Machine Learning Engineer')">Machine Learning Engineer</div>
+                                            <div class="title-option" onclick="selectTitle('Analytics Engineer')">Analytics Engineer</div>
+                                            <div class="title-option" onclick="selectTitle('Business Analyst')">Business Analyst</div>
+                                        </div>
+                                        
+                                        <div class="dropdown-category">
+                                            <div class="category-label">Management & Leadership</div>
+                                            <div class="title-option" onclick="selectTitle('Engineering Manager')">Engineering Manager</div>
+                                            <div class="title-option" onclick="selectTitle('Technical Lead')">Technical Lead</div>
+                                            <div class="title-option" onclick="selectTitle('Product Manager')">Product Manager</div>
+                                            <div class="title-option" onclick="selectTitle('Project Manager')">Project Manager</div>
+                                            <div class="title-option" onclick="selectTitle('Director of Engineering')">Director of Engineering</div>
+                                        </div>
+                                        
+                                        <div class="dropdown-category">
+                                            <div class="category-label">Design</div>
+                                            <div class="title-option" onclick="selectTitle('UX Designer')">UX Designer</div>
+                                            <div class="title-option" onclick="selectTitle('UI Designer')">UI Designer</div>
+                                            <div class="title-option" onclick="selectTitle('Product Designer')">Product Designer</div>
+                                            <div class="title-option" onclick="selectTitle('Design Lead')">Design Lead</div>
+                                        </div>
+                                        
+                                        <div class="dropdown-category">
+                                            <div class="category-label">Other</div>
+                                            <div class="title-option" onclick="selectTitle('QA Engineer')">QA Engineer</div>
+                                            <div class="title-option" onclick="selectTitle('Security Engineer')">Security Engineer</div>
+                                            <div class="title-option" onclick="selectTitle('Solutions Architect')">Solutions Architect</div>
+                                            <div class="title-option" onclick="selectTitle('Technical Writer')">Technical Writer</div>
+                                            <div class="title-option" onclick="selectTitle('Consultant')">Consultant</div>
+                                        </div>
+                                    </div>
+                                    <div id="noResults" class="no-results hidden">No titles found</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" placeholder="your.email@example.com" class="form-control" value="{{ email }}" onchange="updatePreview()">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input type="tel" id="phone" placeholder="+1 (555) 123-4567" class="form-control" value="{{ phone }}" onchange="updatePreview()">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="location">Location</label>
+                            <input type="text" id="location" placeholder="City, State" class="form-control" value="{{ location }}" onchange="updatePreview()">
+                        </div>
+                    </div>
+
+                    <!-- Professional Summary -->
+                    <div class="form-section" id="summary-section">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Professional Summary</h3>
+                        <div class="form-group">
+                            <textarea id="summary" placeholder="Enter your professional summary..." class="form-control" onchange="updatePreview()">{{ summary }}</textarea>
+                        </div>
+                    </div>
+
+                    <!-- Professional Experience -->
+                    <div class="form-section" id="experience-section">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Professional Experience</h3>
+                        <div id="experienceContainer" class="space-y-3 mb-4"></div>
+                        <button type="button" class="btn-add" onclick="addExperience()">
+                            <i class="fas fa-plus mr-2"></i>Add Experience
+                        </button>
+                    </div>
+
+                    <!-- Technical Skills -->
+                    <div class="form-section" id="skills-section">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Technical Skills</h3>
+                        <div id="skillsContainer" class="space-y-3 mb-4"></div>
+                        <button type="button" class="btn-add" onclick="addSkill()">
+                            <i class="fas fa-plus mr-2"></i>Add Skill
+                        </button>
+                    </div>
+
+                    <!-- Education -->
+                    <div class="form-section" id="education-section">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Education</h3>
+                        <div id="educationContainer" class="space-y-3 mb-4"></div>
+                        <button type="button" class="btn-add" onclick="addEducation()">
+                            <i class="fas fa-plus mr-2"></i>Add Education
+                        </button>
+                    </div>
+
+                    <!-- Custom Sections -->
+                    <div class="form-section" id="custom-sections">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Additional Sections</h3>
+                        <div id="customSectionsContainer" class="space-y-3 mb-4"></div>
+                        <button type="button" class="btn-add" onclick="addCustomSection()">
+                            <i class="fas fa-plus mr-2"></i>Add Custom Section
+                        </button>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let experienceCount = 0;
+        let educationCount = 0;
+        let skillCount = 0;
+        let customSectionCount = 0;
+        
+        // Prefilled data from Django context
+        const prefillData = {
+            experiences: {{ experiences|safe }},
+            educations: {{ educations|safe }},
+            skills: {{ skills|safe }} || [],
+            customSections: {{ customSections|safe }} || []
+        };
+
+        function toggleTitleDropdown() {
+            const dropdown = document.getElementById('titleDropdown');
+            dropdown.classList.toggle('hidden');
+            if (!dropdown.classList.contains('hidden')) {
+                setTimeout(() => {
+                    document.getElementById('filterInput').focus();
+                }, 100);
+            }
+        }
+
+        function selectTitle(title) {
+            document.getElementById('professionalTitle').value = title;
+            document.getElementById('titleDropdown').classList.add('hidden');
+            document.getElementById('filterInput').value = '';
+            filterTitles();
+            updatePreview();
+        }
+
+        function showTitleSuggestions() {
+            const dropdown = document.getElementById('titleDropdown');
+            dropdown.classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('filterInput').focus();
+            }, 50);
+        }
+
+        function filterTitles() {
+            const filterValue = document.getElementById('filterInput').value.toLowerCase().trim();
+            const options = document.querySelectorAll('.title-option');
+            const categories = document.querySelectorAll('.dropdown-category');
+            let visibleCount = 0;
+            let exactMatch = false;
+
+            // Filter options
+            options.forEach(option => {
+                const text = option.textContent.toLowerCase();
+                const matches = text.includes(filterValue);
+                
+                if (filterValue && text === filterValue) {
+                    exactMatch = true;
+                }
+                
+                if (filterValue === '' || matches) {
+                    option.classList.remove('hidden');
+                    if (filterValue !== '') visibleCount++;
+                } else {
+                    option.classList.add('hidden');
+                }
+            });
+
+            // Show/hide categories
+            categories.forEach(category => {
+                const visibleOptions = category.querySelectorAll('.title-option:not(.hidden)');
+                if (visibleOptions.length > 0) {
+                    category.style.display = 'block';
+                } else {
+                    category.style.display = 'none';
+                }
+            });
+
+            // Show/hide custom option
+            const customOption = document.getElementById('customProfessionOption');
+            if (filterValue && filterValue.length > 0 && !exactMatch) {
+                customOption.style.display = 'block';
+                customOption.innerHTML = `<div class="title-option bg-emerald-50 border-2 border-emerald-500 font-semibold" onclick="selectTitle('${filterValue}')"><i class="fas fa-plus mr-2 text-emerald-600"></i>Add as new profession: "${filterValue}"</div>`;
+            } else {
+                customOption.style.display = 'none';
+            }
+
+            // Show/hide no results message
+            const noResults = document.getElementById('noResults');
+            if (visibleCount === 0 && filterValue.length > 0 && !customOption.style.display === 'block') {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            const titleField = document.getElementById('professionalTitle');
+            const dropdown = document.getElementById('titleDropdown');
+            const filterInput = document.getElementById('filterInput');
+            
+            if (titleField && dropdown && !titleField.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+                filterInput.value = '';
+                filterTitles();
+            }
+        });
+
+        // Add filter input listener
+        document.addEventListener('DOMContentLoaded', () => {
+            const filterInput = document.getElementById('filterInput');
+            if (filterInput) {
+                filterInput.addEventListener('input', filterTitles);
+            }
+        });
+
+        function scrollToForm(sectionId) {
+            // Show editor container
+            const editorContainer = document.getElementById('editorContainer');
+            const resumeContainer = document.getElementById('resumePreviewContainer');
+            
+            editorContainer.classList.remove('hidden');
+            resumeContainer.classList.remove('w-full');
+            resumeContainer.classList.add('w-1/2');
+            
+            // Remove active class from all sections
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Add active class to target section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                
+                // Scroll to section
+                const editorPanel = document.querySelector('.editor-panel');
+                const sectionTop = targetSection.offsetTop;
+                editorPanel.scrollTo({
+                    top: sectionTop - 100,
+                    behavior: 'smooth'
+                });
+                
+                // Focus on first input if available
+                const firstInput = targetSection.querySelector('input, textarea');
+                if (firstInput) {
+                    setTimeout(() => firstInput.focus(), 300);
+                }
+            }
+        }
+
+        function closeEditorPanel() {
+            const editorContainer = document.getElementById('editorContainer');
+            const resumeContainer = document.getElementById('resumePreviewContainer');
+            
+            editorContainer.classList.add('hidden');
+            resumeContainer.classList.remove('w-1/2');
+            resumeContainer.classList.add('w-full');
+            
+            // Remove active state from all sections
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.remove('active');
+            });
+        }
+
+        function updatePreview() {
+            // Update basic information
+            document.getElementById('previewName').textContent = document.getElementById('fullName').value || 'Your Name';
+            document.getElementById('previewTitle').textContent = document.getElementById('professionalTitle').value || 'Your Professional Title';
+            document.getElementById('previewEmail').innerHTML = `<i class="fas fa-envelope mr-2"></i>${document.getElementById('email').value || 'email@example.com'}`;
+            document.getElementById('previewPhone').innerHTML = `<i class="fas fa-phone mr-2"></i>${document.getElementById('phone').value || '+1 (555) 123-4567'}`;
+            document.getElementById('previewLocation').innerHTML = `<i class="fas fa-map-marker-alt mr-2"></i>${document.getElementById('location').value || 'City, State'}`;
+            
+            // Update summary
+            document.getElementById('previewSummary').textContent = document.getElementById('summary').value || 'Enter your professional summary here.';
+            
+            // Update skills
+            updateSkillsPreview();
+            
+            // Update experience entries
+            updateExperiencePreview();
+            
+            // Update education entries
+            updateEducationPreview();
+            
+            // Update custom sections
+            updateCustomSectionsPreview();
+        }
+
+        function addSkill() {
+            const container = document.getElementById('skillsContainer');
+            const id = skillCount++;
+            
+            const html = `
+                <div class="entry-item" id="skill-${id}">
+                    <button type="button" class="btn-remove" onclick="removeSkill(${id})">Remove</button>
+                    <div class="form-group mb-2">
+                        <input type="text" placeholder="Skill Name (e.g., React, Python, Docker)" class="form-control skill-name-${id}" onchange="updatePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Expertise Level (%)</label>
+                        <input type="number" min="0" max="100" placeholder="85" class="form-control skill-level-${id}" onchange="updatePreview()" value="80">
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function removeSkill(id) {
+            const element = document.getElementById(`skill-${id}`);
+            if (element) {
+                element.remove();
+                updatePreview();
+            }
+        }
+
+        function updateSkillsPreview() {
+            const container = document.getElementById('previewSkills');
+            container.innerHTML = '';
+            
+            let hasSkills = false;
+            for (let i = 0; i < skillCount; i++) {
+                const name = document.querySelector(`.skill-name-${i}`)?.value;
+                const level = document.querySelector(`.skill-level-${i}`)?.value || 80;
+                
+                if (name) {
+                    hasSkills = true;
+                    const html = `
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="font-semibold text-gray-800 text-sm">${name}</span>
+                                <span class="text-xs text-gray-600 font-bold">${level}%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div style="background: linear-gradient(to right, var(--primary-color), var(--primary-dark)); width: ${level}%; height: 100%; border-radius: 9999px;"></div>
+                            </div>
+                        </div>
+                    `;
+                    container.insertAdjacentHTML('beforeend', html);
+                }
+            }
+            
+            if (!hasSkills) {
+                container.innerHTML = '<p class="text-gray-700 text-sm">Add your technical skills here.</p>';
+            }
+        }
+
+        function addExperience() {
+            const container = document.getElementById('experienceContainer');
+            const id = experienceCount++;
+            
+            const html = `
+                <div class="entry-item" id="exp-${id}">
+                    <button type="button" class="btn-remove" onclick="removeExperience(${id})">Remove</button>
+                    <div class="form-group mb-2">
+                        <input type="text" placeholder="Job Title" class="form-control exp-title-${id}" onchange="updatePreview()">
+                    </div>
+                    <div class="form-group mb-2">
+                        <input type="text" placeholder="Company Name" class="form-control exp-company-${id}" onchange="updatePreview()">
+                    </div>
+                    <div class="form-group mb-2">
+                        <input type="text" placeholder="Duration (e.g., May 2020 - Present)" class="form-control exp-duration-${id}" onchange="updatePreview()">
+                    </div>
+                    <div class="form-group">
+                        <textarea placeholder="Job description/achievements..." class="form-control exp-desc-${id}" onchange="updatePreview()"></textarea>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function removeExperience(id) {
+            const element = document.getElementById(`exp-${id}`);
+            if (element) {
+                element.remove();
+                updatePreview();
+            }
+        }
+
+        function updateExperiencePreview() {
+            const container = document.getElementById('previewExperience');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < experienceCount; i++) {
+                const title = document.querySelector(`.exp-title-${i}`)?.value;
+                const company = document.querySelector(`.exp-company-${i}`)?.value;
+                const duration = document.querySelector(`.exp-duration-${i}`)?.value;
+                const desc = document.querySelector(`.exp-desc-${i}`)?.value;
+                
+                if (title || company || duration || desc) {
+                    const html = `
+                        <div class="mb-4">
+                            <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-800">${title || 'Job Title'}</h3>
+                                    <p class="text-emerald-600 font-semibold">${company || 'Company'}</p>
+                                </div>
+                                <span class="text-sm text-gray-600 font-semibold">${duration || 'Duration'}</span>
+                            </div>
+                            <p class="text-gray-700 mt-2 text-sm">${desc || ''}</p>
+                        </div>
+                    `;
+                    container.insertAdjacentHTML('beforeend', html);
+                }
+            }
+        }
+
+        function addEducation() {
+            const container = document.getElementById('educationContainer');
+            const id = educationCount++;
+            
+            const html = `
+                <div class="entry-item" id="edu-${id}">
+                    <button type="button" class="btn-remove" onclick="removeEducation(${id})">Remove</button>
+                    <div class="form-group mb-2">
+                        <input type="text" placeholder="Degree" class="form-control edu-degree-${id}" onchange="updatePreview()">
+                    </div>
+                    <div class="form-group mb-2">
+                        <input type="text" placeholder="School/University" class="form-control edu-school-${id}" onchange="updatePreview()">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" placeholder="Graduation Year" class="form-control edu-year-${id}" onchange="updatePreview()">
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function removeEducation(id) {
+            const element = document.getElementById(`edu-${id}`);
+            if (element) {
+                element.remove();
+                updatePreview();
+            }
+        }
+
+        function updateEducationPreview() {
+            const container = document.getElementById('previewEducation');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < educationCount; i++) {
+                const degree = document.querySelector(`.edu-degree-${i}`)?.value;
+                const school = document.querySelector(`.edu-school-${i}`)?.value;
+                const year = document.querySelector(`.edu-year-${i}`)?.value;
+                
+                if (degree || school || year) {
+                    const html = `
+                        <div class="mb-4">
+                            <h3 class="text-lg font-bold text-gray-800">${degree || 'Degree'}</h3>
+                            <p class="text-emerald-600 font-semibold">${school || 'School'}</p>
+                            <p class="text-sm text-gray-600">${year || 'Year'}</p>
+                        </div>
+                    `;
+                    container.insertAdjacentHTML('beforeend', html);
+                }
+            }
+        }
+
+        function addCustomSection() {
+            const container = document.getElementById('customSectionsContainer');
+            const id = customSectionCount++;
+            
+            const html = `
+                <div class="entry-item" id="custom-${id}">
+                    <button type="button" class="btn-remove" onclick="removeCustomSection(${id})">Remove</button>
+                    <div class="form-group mb-2">
+                        <label>Section Title (e.g., Extra Curricular, Awards, Certifications)</label>
+                        <input type="text" placeholder="Section Title" class="form-control custom-title-${id}" onchange="updatePreview()">
+                    </div>
+                    <div class="form-group">
+                        <label>Content</label>
+                        <textarea placeholder="Add section content here..." class="form-control custom-content-${id}" onchange="updatePreview()"></textarea>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', html);
+        }
+
+        function removeCustomSection(id) {
+            const element = document.getElementById(`custom-${id}`);
+            if (element) {
+                element.remove();
+                updatePreview();
+            }
+        }
+
+        function updateCustomSectionsPreview() {
+            const container = document.getElementById('previewCustomSections');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < customSectionCount; i++) {
+                const title = document.querySelector(`.custom-title-${i}`)?.value;
+                const content = document.querySelector(`.custom-content-${i}`)?.value;
+                
+                if (title || content) {
+                    const html = `
+                        <div class="mb-6 preview-section clickable" onclick="scrollToForm('custom-sections')">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-3 pb-2" style="border-bottom: 2px solid var(--primary-color);">${title || 'Section'}</h2>
+                            <p class="text-gray-700 leading-relaxed">${content || ''}</p>
+                        </div>
+                    `;
+                    container.insertAdjacentHTML('beforeend', html);
+                }
+            }
+        }
+
+        function downloadResume() {
+            alert('PDF download feature coming soon!');
+        }
+
+        // Initialize preview on page load
+        window.addEventListener('load', () => {
+            // Load prefilled experiences
+            if (prefillData.experiences && prefillData.experiences.length > 0) {
+                prefillData.experiences.forEach(exp => {
+                    addExperience();
+                    const lastId = experienceCount - 1;
+                    document.querySelector(`.exp-title-${lastId}`).value = exp.title;
+                    document.querySelector(`.exp-company-${lastId}`).value = exp.company;
+                    document.querySelector(`.exp-duration-${lastId}`).value = exp.duration;
+                    document.querySelector(`.exp-desc-${lastId}`).value = exp.description;
+                });
+            }
+            
+            // Load prefilled educations
+            if (prefillData.educations && prefillData.educations.length > 0) {
+                prefillData.educations.forEach(edu => {
+                    addEducation();
+                    const lastId = educationCount - 1;
+                    document.querySelector(`.edu-degree-${lastId}`).value = edu.degree;
+                    document.querySelector(`.edu-school-${lastId}`).value = edu.school;
+                    document.querySelector(`.edu-year-${lastId}`).value = edu.year;
+                });
+            }
+            
+            // Load prefilled skills
+            if (prefillData.skills && prefillData.skills.length > 0) {
+                prefillData.skills.forEach(skill => {
+                    addSkill();
+                    const lastId = skillCount - 1;
+                    document.querySelector(`.skill-name-${lastId}`).value = skill.name;
+                    document.querySelector(`.skill-level-${lastId}`).value = skill.level;
+                });
+            }
+            
+            // Load prefilled custom sections
+            if (prefillData.customSections && prefillData.customSections.length > 0) {
+                prefillData.customSections.forEach(section => {
+                    addCustomSection();
+                    const lastId = customSectionCount - 1;
+                    document.querySelector(`.custom-title-${lastId}`).value = section.title;
+                    document.querySelector(`.custom-content-${lastId}`).value = section.content;
+                });
+            }
+            
+            updatePreview();
+        });
+    </script>
+</body>
+</html>

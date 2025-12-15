@@ -33,10 +33,39 @@
         .template-card {
             transition: all 0.2s ease-in-out;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
         .template-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .template-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .template-card:hover .template-overlay {
+            opacity: 1;
+        }
+        .template-overlay-content {
+            color: white;
+        }
+        .template-overlay-desc {
+            font-size: 0.875rem;
+            line-height: 1.5;
+            margin-bottom: 0.75rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
         /* Custom scrollbar for the template viewer for cleaner look */
         #template-viewer {
@@ -96,75 +125,152 @@
         <h1 class="text-3xl font-bold text-center text-gray-800 my-6">
             Resume Template Explorer
         </h1>
-
-        <!-- Template Selection Bar -->
-        <div id="template-selector" class="flex flex-col lg:flex-row gap-6 mb-8">
-            
-            <!-- Modern Template Card -->
-            <a href="/resume-eplorer/1/" class="template-card flex-1 bg-white p-6 rounded-xl shadow-lg border-2 border-transparent hover:border-blue-500 block">
-                <h2 class="text-2xl font-semibold mb-2 text-gray-800">Modern</h2>
-                <p class="text-gray-600 mb-4">Two-column layout, sharp lines, and a blue accent. Ideal for tech or creative roles.</p>
-                <div class="h-20 bg-gray-50 p-2 border border-gray-200 rounded">
-                    <!-- Preview snippet -->
-                    <div class="flex h-full">
-                        <div class="w-1/3 bg-gray-100 p-1 rounded-l">
-                            <div class="h-1 w-full bg-blue-500 mb-1"></div>
-                            <div class="h-2 bg-gray-800 w-2/3 mb-2"></div>
-                            <div class="h-1 bg-gray-400 w-full mb-1"></div>
-                            <div class="h-1 bg-gray-400 w-4/5"></div>
-                        </div>
-                        <div class="w-2/3 p-1">
-                            <div class="h-3 bg-blue-500 mb-2"></div>
-                            <div class="h-1 w-full bg-gray-400 mb-1"></div>
-                            <div class="h-1 w-5/6 bg-gray-400"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-4 text-blue-600 font-semibold text-sm">View Resume →</div>
-            </a>
-
-            <!-- Traditionalist Template Card -->
-            <a href="/resume-eplorer/2/" class="template-card flex-1 bg-white p-6 rounded-xl shadow-lg border-2 border-transparent hover:border-gray-800 block">
-                <h2 class="text-2xl font-semibold mb-2 text-gray-800">Traditionalist</h2>
-                <p class="text-gray-600 mb-4">Single-column layout, minimalist, and ATS-friendly. Ideal for formal or corporate roles.</p>
-                <div class="h-20 bg-gray-50 p-2 border border-gray-200 rounded">
-                    <!-- Preview snippet -->
-                    <div class="h-full">
-                        <div class="h-3 bg-gray-800 mb-2 w-1/2 mx-auto"></div>
-                        <div class="h-1 w-full bg-gray-400 mb-1"></div>
-                        <div class="h-1 w-5/6 bg-gray-400 mb-2"></div>
-                        <div class="h-1 w-full bg-gray-400 mb-1"></div>
-                        <div class="h-1 w-4/5 bg-gray-400"></div>
-                    </div>
-                </div>
-                <div class="mt-4 text-blue-600 font-semibold text-sm">View Resume →</div>
-            </a>
-
-            <!-- Designer/Creative Template Card (New) -->
-            <a href="/resume-eplorer/3/" class="template-card flex-1 bg-white p-6 rounded-xl shadow-lg border-2 border-transparent hover:border-purple-500 block">
-                <h2 class="text-2xl font-semibold mb-2 text-gray-800">Designer</h2>
-                <p class="text-gray-600 mb-4">Modern design-focused layout with visual appeal. Perfect for creative professionals.</p>
-                <div class="h-20 bg-gray-50 p-2 border border-gray-200 rounded">
-                    <!-- Preview snippet -->
-                    <div class="flex flex-col h-full gap-1">
-                        <div class="h-3 bg-blue-500 rounded w-3/4"></div>
-                        <div class="h-1 w-full bg-gray-300"></div>
-                        <div class="h-1 w-4/5 bg-gray-300"></div>
-                        <div class="flex gap-1 flex-1">
-                            <div class="flex-1 bg-purple-100 rounded"></div>
-                            <div class="flex-1 bg-blue-100 rounded"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="mt-4 text-blue-600 font-semibold text-sm">View Resume →</div>
-            </a>
-        </div>
-
         <!-- Info Section -->
-        <div class="bg-blue-50 rounded-xl p-6 border border-blue-200">
+        <div class="bg-blue-50 rounded-xl p-6 border border-blue-200" style="margin-bottom: 30px;">
             <h2 class="text-xl font-semibold text-gray-800 mb-2">Choose Your Resume Template</h2>
             <p class="text-gray-700">Click on any template card above to view the complete resume. Each template showcases a different design style suitable for various industries and career levels.</p>
         </div>
+        <!-- Templates Grid - 4 Column Layout -->
+        <div id="template-selector" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            
+            <!-- Template Card 1 -->
+            <div class="template-card bg-white rounded-xl shadow-lg overflow-hidden h-80 relative">
+                <img src="https://cdn.enhancv.com/predefined-examples/9b6yqbTMEJbdzGuASfE8YAgbDBZDD824g1EZEAjt/image.png" alt="Modern Template" class="w-full h-full">
+                <div class="template-overlay">
+                    <div class="template-overlay-content">
+                        <p class="template-overlay-desc">Two-column layout with sharp lines and blue accents. Perfect for tech professionals.</p>
+                        <a href="/resume-eplorer/1/" class="w-full inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-center transition">Use Template</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Template Card 2 -->
+            <div class="template-card bg-white rounded-xl shadow-lg overflow-hidden h-80 relative">
+                <img src="https://cdn.enhancv.com/predefined-examples/9b6yqbTMEJbdzGuASfE8YAgbDBZDD824g1EZEAjt/image.png" alt="Product Manager Template" class="w-full h-full">
+                <div class="template-overlay">
+                    <div class="template-overlay-content">
+                        <p class="template-overlay-desc">Two-column blue theme layout perfect for Product Managers and leadership roles.</p>
+                        <a href="/resume-eplorer/2/" class="w-full inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-center transition">Use Template</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Template Card 3 -->
+            <div class="template-card bg-white rounded-xl shadow-lg overflow-hidden h-80 relative">
+                <img src="https://cdn.enhancv.com/predefined-examples/9b6yqbTMEJbdzGuASfE8YAgbDBZDD824g1EZEAjt/image.png" alt="Designer Template" class="w-full h-full">
+                <div class="template-overlay">
+                    <div class="template-overlay-content">
+                        <p class="template-overlay-desc">Modern design-focused layout with visual appeal for creative professionals.</p>
+                        <a href="/resume-eplorer/3/" class="w-full inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-center transition">Use Template</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Template Card 4 -->
+            <div class="template-card bg-white rounded-xl shadow-lg overflow-hidden h-80 relative">
+                <img src="https://cdn.enhancv.com/predefined-examples/9b6yqbTMEJbdzGuASfE8YAgbDBZDD824g1EZEAjt/image.png" alt="Executive Template" class="w-full h-full">
+                <div class="template-overlay">
+                    <div class="template-overlay-content">
+                        <p class="template-overlay-desc">Premium layout designed for senior executives and leadership positions.</p>
+                        <a href="/resume-eplorer/4/" class="w-full inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-center transition">Use Template</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 2 -->
+
+            <!-- Template Card 5 -->
+            <div class="template-card bg-white rounded-xl shadow-lg overflow-hidden h-80 relative">
+                <img src="https://cdn.enhancv.com/predefined-examples/9b6yqbTMEJbdzGuASfE8YAgbDBZDD824g1EZEAjt/image.png" alt="Creative Template" class="w-full h-full">
+                <div class="template-overlay">
+                    <div class="template-overlay-content">
+                        <p class="template-overlay-desc">Colorful and artistic design perfect for creative and design-oriented professionals.</p>
+                        <a href="/resume-eplorer/5/" class="w-full inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-center transition">Use Template</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Template Card 6 -->
+            <div class="template-card bg-white rounded-xl shadow-lg overflow-hidden h-80 relative">
+                <img src="https://cdn.enhancv.com/predefined-examples/9b6yqbTMEJbdzGuASfE8YAgbDBZDD824g1EZEAjt/image.png" alt="Academic Template" class="w-full h-full">
+                <div class="template-overlay">
+                    <div class="template-overlay-content">
+                        <p class="template-overlay-desc">Scholarly layout emphasizing education and research for academic professionals.</p>
+                        <a href="/resume-eplorer/6/" class="w-full inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-center transition">Use Template</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Template Card 7 -->
+            <div class="template-card bg-white rounded-xl shadow-lg overflow-hidden h-80 relative">
+                <img src="https://cdn.enhancv.com/predefined-examples/9b6yqbTMEJbdzGuASfE8YAgbDBZDD824g1EZEAjt/image.png" alt="Technical Template" class="w-full h-full">
+                <div class="template-overlay">
+                    <div class="template-overlay-content">
+                        <p class="template-overlay-desc">Engineering-focused layout highlighting technical skills and project work.</p>
+                        <a href="/resume-eplorer/7/" class="w-full inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-center transition">Use Template</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Template Card 8 -->
+            <div class="template-card bg-white rounded-xl shadow-lg overflow-hidden h-80 relative">
+                <img src="https://cdn.enhancv.com/predefined-examples/9b6yqbTMEJbdzGuASfE8YAgbDBZDD824g1EZEAjt/image.png" alt="Healthcare Template" class="w-full h-full">
+                <div class="template-overlay">
+                    <div class="template-overlay-content">
+                        <p class="template-overlay-desc">Medical and healthcare professional layout with clinical credentials focus.</p>
+                        <a href="/resume-eplorer/8/" class="w-full inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-center transition">Use Template</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Row 3 -->
+
+            <!-- Template Card 9 -->
+            <div class="template-card bg-white rounded-xl shadow-lg overflow-hidden h-80 relative">
+                <img src="https://cdn.enhancv.com/predefined-examples/9b6yqbTMEJbdzGuASfE8YAgbDBZDD824g1EZEAjt/image.png" alt="Sales Template" class="w-full h-full">
+                <div class="template-overlay">
+                    <div class="template-overlay-content">
+                        <p class="template-overlay-desc">Sales-oriented design showcasing achievements, targets, and business results.</p>
+                        <a href="/resume-eplorer/9/" class="w-full inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-center transition">Use Template</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Template Card 10 -->
+            <div class="template-card bg-white rounded-xl shadow-lg overflow-hidden h-80 relative">
+                <img src="https://cdn.enhancv.com/predefined-examples/9b6yqbTMEJbdzGuASfE8YAgbDBZDD824g1EZEAjt/image.png" alt="Marketing Template" class="w-full h-full">
+                <div class="template-overlay">
+                    <div class="template-overlay-content">
+                        <p class="template-overlay-desc">Marketing professional layout emphasizing campaigns, analytics, and brand impact.</p>
+                        <a href="/resume-eplorer/10/" class="w-full inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-center transition">Use Template</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Template Card 11 -->
+            <div class="template-card bg-white rounded-xl shadow-lg overflow-hidden h-80 relative">
+                <img src="https://cdn.enhancv.com/predefined-examples/9b6yqbTMEJbdzGuASfE8YAgbDBZDD824g1EZEAjt/image.png" alt="Finance Template" class="w-full h-full">
+                <div class="template-overlay">
+                    <div class="template-overlay-content">
+                        <p class="template-overlay-desc">Financial sector layout with emphasis on analysis, compliance, and certifications.</p>
+                        <a href="/resume-eplorer/11/" class="w-full inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-center transition">Use Template</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Template Card 12 -->
+            <div class="template-card bg-white rounded-xl shadow-lg overflow-hidden h-80 relative">
+                <img src="https://cdn.enhancv.com/predefined-examples/9b6yqbTMEJbdzGuASfE8YAgbDBZDD824g1EZEAjt/image.png" alt="Legal Template" class="w-full h-full">
+                <div class="template-overlay">
+                    <div class="template-overlay-content">
+                        <p class="template-overlay-desc">Legal professional layout highlighting bar admissions, case experience, and practice areas.</p>
+                        <a href="/resume-eplorer/12/" class="w-full inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-center transition">Use Template</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
     </div>
 
     <script>
