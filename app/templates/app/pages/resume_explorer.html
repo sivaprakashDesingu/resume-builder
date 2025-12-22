@@ -1,33 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resume Template Explorer</title>
-    <!-- Load Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+{% extends 'app/base.html' %}
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        // Colors for Modern Template
-                        modern_primary: '#3b82f6', // Blue-500
-                        modern_secondary: '#1f2937', // Gray-800
-                        // Colors for Traditional Template
-                        traditional_primary: '#1f2937', // Gray-800
-                        traditional_line: '#d1d5db', // Gray-300
-                    }
-                }
-            }
-        }
-    </script>
+{% block title %}Resume Template Explorer{% endblock %}
+
+{% block main_class %}{% endblock %}
+
+{% block extra_css %}
     <style>
         /* Base styles for the explorer UI */
         .template-card {
@@ -116,22 +93,20 @@
             margin-left: -1em;
         }
     </style>
-</head>
-<body class="font-sans bg-gray-100 p-4 min-h-screen">
+{% endblock %}
 
-    <!-- Main Application Container -->
-    <div class="max-w-6xl mx-auto">
-        
-        <h1 class="text-3xl font-bold text-center text-gray-800 my-6">
+{% block content %}
+    <div class="container mx-auto px-6 py-12">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">
             Resume Template Explorer
         </h1>
         <!-- Info Section -->
-        <div class="bg-blue-50 rounded-xl p-6 border border-blue-200" style="margin-bottom: 30px;">
+        <div class="bg-blue-50 rounded-xl p-6 border border-blue-200 mb-8">
             <h2 class="text-xl font-semibold text-gray-800 mb-2">Choose Your Resume Template</h2>
             <p class="text-gray-700">Click on any template card above to view the complete resume. Each template showcases a different design style suitable for various industries and career levels.</p>
         </div>
         <!-- Templates Grid - 4 Column Layout -->
-        <div id="template-selector" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div id="template-selector" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             
             <!-- Template Card 1 -->
             <div class="template-card bg-white rounded-xl shadow-lg overflow-hidden h-80 relative">
@@ -305,6 +280,7 @@
                         <a href="/resume-eplorer/14/" class="w-full inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-center transition">Create Resume</a>
                     </div>
                 </div>
+            </div>
             </div>
         </div>
 
@@ -481,6 +457,4 @@
         // but for an explorer, keeping it neutral is better.
         // loadTemplate('modern'); 
     </script>
-
-</body>
-</html>
+{% endblock %}

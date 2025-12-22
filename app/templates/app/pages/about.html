@@ -1,13 +1,12 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>About</title>
-  </head>
-  <body>
-    <h1>About this app</h1>
-    <p>This is a minimal About page for your Django app.</p>
-    <p><a href="/">Home</a></p>
-  </body>
-</html>
+{% extends 'app/base.html' %}
+
+{% block title %}About - Resumify{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 py-20">
+    <h1 class="text-4xl font-bold text-slate-900 mb-6">About Resumify</h1>
+    <p class="text-lg text-slate-600 mb-4">This is a minimal About page for your Django app.</p>
+    <p><a href="{% url 'home' %}" class="text-brand-600 hover:text-brand-700 font-semibold">← Back to Home</a></p>
+</div>
+{% endblock %}
+

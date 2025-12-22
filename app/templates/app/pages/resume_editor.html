@@ -1,13 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resume Editor</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+{% extends 'app/base.html' %}
+{% load static %}
+
+{% block title %}Resume Editor{% endblock %}
+
+{% block main_class %}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'app/css/resume_editor.css' %}">
     <style>
         :root {
             {% if is_empty %}
@@ -35,471 +34,27 @@
             --tw-border-color: var(--border-color);
         }
 
-        .resume-preview {
-            border: 1px solid #e5e7eb;
-            overflow-y: auto;
-            max-height: 90vh;
-        }
-        
-        .editor-panel {
-            overflow-y: auto;
-            max-height: 90vh;
-        }
-        
-        .editor-header {
-            position: sticky;
-            top: 0;
-            z-index: 30;
-            background: white;
-            border-bottom: 2px solid var(--primary-color);
-            padding: 1rem 1.5rem;
-            margin: -1.5rem -1.5rem 1.5rem -1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
-        }
-        
-        .editor-header h3 {
-            margin: 0;
-            flex-grow: 1;
-            color: var(--primary-dark);
-        }
-        
-        .editor-header button {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            color: #6b7280;
-        }
-        
-        .editor-header button:hover {
-            color: #ef4444;
-            background-color: rgba(239, 68, 68, 0.1);
-            border-radius: 0.375rem;
-        }
-        
-        .form-section {
-            border: 1px solid #e5e7eb;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            background: #f9fafb;
-            transition: all 0.3s ease;
-        }
-        
-        .form-section.active {
-            background: var(--primary-light);
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        .preview-section {
-            padding: 1rem;
-            border-radius: 0.375rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .preview-section:hover {
-            background-color: rgba(102, 126, 234, 0.05);
-            border-left: 4px solid var(--primary-color);
-        }
-        
-        .preview-section.clickable {
-            position: relative;
-        }
-        
-        .preview-section.clickable::after {
-            content: '✎ Click to edit';
-            position: absolute;
-            top: 4px;
-            right: 8px;
-            font-size: 0.75rem;
-            color: var(--text-primary);
-            font-weight: 600;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-        
-        .preview-section.clickable:hover::after {
-            opacity: 1;
-        }
-        
-        .form-group {
-            margin-bottom: 1rem;
-            position: relative;
-        }
-        
-        .form-group label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            color: #374151;
-            font-size: 0.875rem;
-        }
-        
-        .form-group .relative {
-            position: relative;
-        }
-        
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-            font-family: inherit;
-        }
-        
-        .form-group select {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-            font-family: inherit;
-            background-color: white;
-            cursor: pointer;
+        body {
+            background: #f3f4f6 !important;
         }
 
-        .form-group input[type="color"] {
-            width: 60px;
-            height: 40px;
-            padding: 2px;
-            border: 1px solid #d1d5db;
-            cursor: pointer;
-        }
-
-        .form-group input[type="range"] {
-            width: 100%;
-            cursor: pointer;
-            height: 6px;
-        }
-
-        .btn-section-toggle {
-            background-color: #f3f4f6;
-            color: #6b7280;
-            border: 1px solid #e5e7eb;
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.375rem;
-            cursor: pointer;
-            font-size: 0.875rem;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 36px;
-            height: 36px;
-        }
-
-        .btn-section-toggle:hover {
-            background-color: #e5e7eb;
-            color: #374151;
-            border-color: #d1d5db;
-        }
-
-        .btn-section-toggle.hidden-section {
-            background-color: #fee2e2;
-            color: #dc2626;
-            border-color: #fecaca;
-        }
-
-        .btn-section-toggle.hidden-section:hover {
-            background-color: #fecaca;
-            color: #991b1b;
-        }
-
-        .hidden-section-content {
-            display: none;
-        }
-        
-        .form-group textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-        
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #10b981;
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-        }
-        
-        #titleDropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            margin-top: 0.25rem;
-            background: white;
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
-            max-height: 300px;
-            overflow-y: auto;
-            z-index: 50;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        #titleDropdown.hidden {
+        /* Hide base navbar and footer for resume editor */
+        nav#navbar {
             display: none !important;
         }
-        
-        #filterInput {
-            width: 100%;
-            padding: 0.5rem;
-            border-bottom: 1px solid #e5e7eb;
-            font-size: 0.875rem;
-            outline: none;
-        }
-        
-        #filterInput:focus {
-            background-color: #f9fafb;
-            border-bottom-color: #10b981;
-        }
-        
-        .dropdown-category {
-            padding-top: 0.5rem;
-        }
-        
-        .category-label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #6b7280;
-            padding: 0.5rem 0.75rem 0.25rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .title-option {
-            padding: 0.5rem 0.75rem;
-            cursor: pointer;
-            transition: background-color 0.15s;
-            font-size: 0.875rem;
-            white-space: nowrap;
-        }
-        
-        .title-option:hover {
-            background-color: rgba(16, 185, 129, 0.1);
-        }
-        
-        .title-option.bg-emerald-50 {
-            background-color: #f0fdf4;
-            border-left: 4px solid #10b981;
-            padding: 0.75rem;
-            font-weight: 500;
-            color: #059669;
-            white-space: normal;
-        }
-        
-        .title-option.bg-emerald-50:hover {
-            background-color: #dcfce7;
-        }
-        
-        .title-option.hidden {
+
+        footer {
             display: none !important;
         }
-        
-        .no-results {
-            padding: 1rem;
-            text-align: center;
-            color: #9ca3af;
-            font-size: 0.875rem;
-        }
-        
-        .btn-add {
-            background-color: #10b981;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            border: none;
-            cursor: pointer;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: background-color 0.2s;
-        }
-        
-        .btn-add:hover {
-            background-color: #059669;
-        }
-        
-        .btn-remove {
-            background-color: #ef4444;
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 0.375rem;
-            border: none;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: 500;
-            transition: background-color 0.2s;
-        }
-        
-        .btn-remove:hover {
-            background-color: #dc2626;
-        }
-        
-        .entry-item {
-            background: white;
-            padding: 0.75rem;
-            border: 1px solid #e5e7eb;
-            border-radius: 0.375rem;
-            margin-bottom: 0.75rem;
-            position: relative;
-        }
-        
-        .entry-item .btn-remove {
-            position: absolute;
-            top: 0.5rem;
-            right: 0.5rem;
-        }
-        
-        /* Template 2 specific styling */
-        body[data-template="2"] .editor-header {
-            border-bottom-color: #667eea;
-        }
-        
-        body[data-template="2"] .editor-header h3 {
-            color: #667eea;
-        }
-        
-        body[data-template="2"] .form-section.active {
-            background-color: #eef2ff;
-            border-color: #667eea;
-        }
-        
-        body[data-template="2"] .preview-section:hover {
-            border-left-color: #667eea;
-        }
-        
-        body[data-template="2"] .preview-section.clickable::after {
-            color: #667eea;
-        }
-        
-        body[data-template="2"] .btn-add {
-            background-color: #667eea;
-        }
-        
-        body[data-template="2"] .btn-add:hover {
-            background-color: #764ba2;
-        }
 
-        /* Print and PDF Styling */
-        @media print {
-            body {
-                background: white;
-                margin: 0;
-                padding: 0;
-                width: 100%;
-                height: auto;
-            }
-            
-            .resume-preview {
-                box-shadow: none !important;
-                border: none !important;
-                max-height: none !important;
-                height: auto !important;
-                width: 100% !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                overflow: visible !important;
-            }
-            
-            .preview-section::after {
-                display: none !important;
-            }
-            
-            .preview-section {
-                border-left: none !important;
-                background-color: transparent !important;
-                page-break-inside: avoid;
-                overflow: visible !important;
-                height: auto !important;
-                max-height: none !important;
-            }
-
-            .editor-container,
-            .editor-panel,
-            .editor-header,
-            button,
-            input[type="button"],
-            input[type="submit"],
-            .btn-add,
-            .btn-remove {
-                display: none !important;
-            }
-
-            p, li, h1, h2, h3, h4, h5, h6 {
-                page-break-after: avoid;
-                page-break-inside: avoid;
-                margin-top: 0 !important;
-            }
-
-            img {
-                max-width: 100%;
-                page-break-inside: avoid;
-            }
-
-            /* Ensure content flows properly */
-            * {
-                page-break-inside: avoid;
-            }
-
-            div {
-                page-break-inside: auto;
-            }
-        }
-
-        /* PDF-specific optimizations */
-        .resume-preview {
-            background: white;
-            color: #000;
-        }
-
-        .resume-preview h1,
-        .resume-preview h2,
-        .resume-preview h3,
-        .resume-preview h4,
-        .resume-preview h5,
-        .resume-preview h6 {
-            page-break-after: avoid;
-            color: inherit;
-        }
-
-        .resume-preview * {
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-            color-adjust: exact;
-        }
-
-        .resume-preview p,
-        .resume-preview div {
-            page-break-inside: avoid;
+        main {
+            padding-top: 0 !important;
         }
     </style>
-</head>
-<body class="font-sans bg-gray-100" data-template="{{ template_id }}" data-is-empty="{% if is_empty %}true{% else %}false{% endif %}">
-    <div class="flex flex-col h-screen">
-        <!-- Header -->
-        <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-6 shadow-lg flex justify-between items-center">
-            <h1 class="text-2xl font-bold">{% if is_empty %}Resume Builder - {{ template_name }} Template{% else %}Resume Editor - Template {{ template_id }}{% endif %}</h1>
-            <div class="flex gap-4">
-                <button onclick="scrollToForm('styling-section')" title="Customize theme" class="bg-white hover:bg-gray-100 text-emerald-600 font-semibold px-4 py-2 rounded-lg transition flex items-center gap-2">
-                    <i class="fas fa-palette"></i>Styling
-                </button>
-                <a href="{% url 'resume_explorer' %}" style="background-color: var(--primary-dark);" class="hover:opacity-80 px-4 py-2 rounded-lg transition text-white">Back to Templates</a>
-                <button onclick="downloadResume()" style="color: var(--primary-color);" class="bg-white hover:bg-gray-100 font-semibold px-4 py-2 rounded-lg transition">Download PDF</button>
-            </div>
-        </div>
+{% endblock %}
 
-        <!-- Main Container -->
+{% block content %}
+    <div class="flex flex-col h-screen">
         <div class="flex flex-1 overflow-hidden">
             <!-- Resume Preview (always half width in 2-column layout) -->
             <div id="resumePreviewContainer" class="w-1/2 bg-gray-200 p-4 overflow-auto transition-all duration-300">
@@ -507,9 +62,9 @@
                     <!-- Resume content will be rendered here -->
                     <div class="p-8 sm:p-12">
                         <!-- Header Section -->
-                        <div class="mb-6 pb-6 preview-section clickable" style="border-bottom: 2px solid var(--primary-color);" onclick="scrollToForm('basicInfo')">
+                        <div class="mb-6 pb-6 preview-section clickable has-border" onclick="scrollToForm('basicInfo')">
                             <h1 class="text-4xl font-bold text-gray-800 mb-2" id="previewName">Your Name</h1>
-                            <p class="text-lg mb-4 font-semibold" id="previewTitle" style="color: var(--primary-color);">Your Professional Title</p>
+                            <p class="text-lg mb-4 font-semibold title-accent" id="previewTitle">Your Professional Title</p>
                             <div class="flex flex-wrap gap-6 text-sm text-gray-700">
                                 <span id="previewEmail"><i class="fas fa-envelope mr-2"></i>email@example.com</span>
                                 <span id="previewPhone"><i class="fas fa-phone mr-2"></i>+1 (555) 123-4567</span>
@@ -519,13 +74,13 @@
 
                         <!-- Professional Summary -->
                         <div class="mb-6 preview-section clickable" onclick="scrollToForm('summary-section')">
-                            <h2 class="text-2xl font-bold text-gray-800 mb-3 pb-2" style="border-bottom: 2px solid var(--primary-color);">Professional Summary</h2>
+                            <h2 class="text-2xl font-bold text-gray-800 mb-3 pb-2 has-border">Professional Summary</h2>
                             <p class="text-gray-700 leading-relaxed" id="previewSummary">Enter your professional summary here.</p>
                         </div>
 
                         <!-- Professional Experience -->
                         <div class="mb-6 preview-section clickable" onclick="scrollToForm('experience-section')">
-                            <h2 class="text-2xl font-bold text-gray-800 mb-3 pb-2" style="border-bottom: 2px solid var(--primary-color);">Professional Experience</h2>
+                            <h2 class="text-2xl font-bold text-gray-800 mb-3 pb-2 has-border">Professional Experience</h2>
                             <div id="previewExperience" class="space-y-4">
                                 <!-- Experience entries will be added here -->
                             </div>
@@ -533,7 +88,7 @@
 
                         <!-- Technical Skills -->
                         <div class="mb-6 preview-section clickable" onclick="scrollToForm('skills-section')">
-                            <h2 class="text-2xl font-bold text-gray-800 mb-3 pb-2" style="border-bottom: 2px solid var(--primary-color);">{% if template_id == 2 %}Skills{% else %}Technical Skills{% endif %}</h2>
+                            <h2 class="text-2xl font-bold text-gray-800 mb-3 pb-2 has-border">{% if template_id == 2 %}Skills{% else %}Technical Skills{% endif %}</h2>
                             {% if template_id == 2 %}
                                 <div id="previewSkills" class="flex flex-wrap gap-2">
                                     <p class="text-gray-700 text-sm w-full">Add your skills here.</p>
@@ -547,7 +102,7 @@
 
                         <!-- Education -->
                         <div class="preview-section clickable" onclick="scrollToForm('education-section')">
-                            <h2 class="text-2xl font-bold text-gray-800 mb-3 pb-2" style="border-bottom: 2px solid var(--primary-color);">Education</h2>
+                            <h2 class="text-2xl font-bold text-gray-800 mb-3 pb-2 has-border">Education</h2>
                             <div id="previewEducation" class="space-y-4">
                                 <!-- Education entries will be added here -->
                             </div>
@@ -561,7 +116,7 @@
 
             <!-- Editor Panel (always visible in 2-column layout) -->
             <div id="editorContainer" class="w-1/2 bg-white editor-panel border-l border-gray-300 overflow-y-auto">
-                <div class="sticky top-0 z-30 bg-white editor-header" style="padding-left: 45px;">
+                <div class="sticky top-0 z-30 bg-white editor-header padded">
                     <h3 class="text-lg font-bold text-gray-800">Edit Resume</h3>
                 </div>
                 <div class="p-6">
@@ -579,12 +134,12 @@
                             <label for="professionalTitle">Professional Title</label>
                             <div class="relative">
                                 <input type="text" id="professionalTitle" placeholder="Select or type a title" class="form-control pr-10" value="{{ professionalTitle }}" onchange="updatePreview()" oninput="showTitleSuggestions()" autocomplete="off">
-                                <button type="button" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer" style="color: var(--primary-color);" onclick="toggleTitleDropdown(); return false;">
+                                <button type="button" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-600 cursor-pointer accent" onclick="toggleTitleDropdown(); return false;">
                                     <i class="fas fa-chevron-down text-lg"></i>
                                 </button>
                                 <div id="titleDropdown" class="hidden absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-xl max-h-64 overflow-y-auto z-50">
                                     <input type="text" id="filterInput" placeholder="Search or type a title..." autocomplete="off">
-                                    <div id="customProfessionOption" style="display: none; padding: 0.5rem;"></div>
+                                    <div id="customProfessionOption"></div>
                                     <div id="dropdownOptions">
                                         <div class="dropdown-category">
                                             <div class="category-label">Engineering</div>
@@ -1045,7 +600,7 @@
                 // Template 2: Display as skill tags/badges
                 if (hasSkills) {
                     const tagHtml = skillElements.map(skill => `
-                        <span class="inline-block px-3 py-1 rounded-full text-sm font-medium" style="background-color: var(--primary-light); color: var(--text-primary); border: 1px solid var(--primary-color);">
+                        <span class="inline-block px-3 py-1 rounded-full text-sm font-medium skill-tag">
                             ${skill.name}
                         </span>
                     `).join('');
@@ -1063,8 +618,8 @@
                                 <span class="text-xs text-gray-600 font-bold">${skill.level}%</span>
                             </div>
                             <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div style="background: linear-gradient(to right, var(--primary-color), var(--primary-dark)); width: ${skill.level}%; height: 100%; border-radius: 9999px;"></div>
-                            </div>
+                                <div class="skill-bar-inner" style="width: ${skill.level}%;"></div>
+                            </div> 
                         </div>
                     `;
                     container.insertAdjacentHTML('beforeend', html);
@@ -1229,7 +784,7 @@
                 if (title || content) {
                     const html = `
                         <div class="mb-6 preview-section clickable" onclick="scrollToForm('custom-sections')">
-                            <h2 class="text-2xl font-bold text-gray-800 mb-3 pb-2" style="border-bottom: 2px solid var(--primary-color);">${title || 'Section'}</h2>
+                            <h2 class="text-2xl font-bold text-gray-800 mb-3 pb-2 has-border">${title || 'Section'}</h2>
                             <p class="text-gray-700 leading-relaxed">${content || ''}</p>
                         </div>
                     `;
@@ -1530,5 +1085,6 @@
             updateResumeStyling();
         }
     </script>
-</body>
-</html>
+{% endblock %}
+
+{% block extra_js %}{% endblock %}

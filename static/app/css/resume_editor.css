@@ -1,0 +1,501 @@
+/* Styles extracted from resume_editor.html */
+/* Using Muli as the primary font */
+body, .resume-preview {
+    font-family: 'Muli', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Utility/helper classes moved from inline styles */
+.btn-back {
+    background-color: var(--primary-dark);
+}
+.btn-back:hover {
+    opacity: 0.9;
+}
+
+.btn-download {
+    color: var(--primary-color);
+}
+
+.has-border {
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.title-accent {
+    color: var(--primary-color);
+}
+
+.editor-header.padded {
+    padding-left: 45px;
+}
+
+.accent {
+    color: var(--primary-color);
+}
+
+#customProfessionOption {
+    display: none;
+    padding: 0.5rem;
+}
+
+.skill-tag {
+    background-color: var(--primary-light);
+    color: var(--text-primary);
+    border: 1px solid var(--primary-color);
+    display: inline-block;
+}
+
+.skill-bar-inner {
+    background: linear-gradient(to right, var(--primary-color), var(--primary-dark));
+    height: 100%;
+    border-radius: 9999px;
+}
+
+.resume-preview {
+    border: 1px solid #e5e7eb;
+    overflow-y: auto;
+    max-height: 90vh;
+}
+
+.editor-panel {
+    overflow-y: auto;
+    max-height: 90vh;
+}
+
+.editor-header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    background: white;
+    border-bottom: 2px solid var(--primary-color);
+    padding: 1rem 1.5rem;
+    margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+}
+
+.editor-header h3 {
+    margin: 0;
+    flex-grow: 1;
+    color: var(--primary-dark);
+}
+
+.editor-header button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: #6b7280;
+}
+
+.editor-header button:hover {
+    color: #ef4444;
+    background-color: rgba(239, 68, 68, 0.1);
+    border-radius: 0.375rem;
+}
+
+.form-section {
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background: #f9fafb;
+    transition: all 0.3s ease;
+}
+
+.form-section.active {
+    background: var(--primary-light);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.preview-section {
+    padding: 1rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.preview-section:hover {
+    background-color: rgba(102, 126, 234, 0.05);
+    border-left: 4px solid var(--primary-color);
+}
+
+.preview-section.clickable {
+    position: relative;
+}
+
+.preview-section.clickable::after {
+    content: '✎ Click to edit';
+    position: absolute;
+    top: 4px;
+    right: 8px;
+    font-size: 0.75rem;
+    color: var(--text-primary);
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.preview-section.clickable:hover::after {
+    opacity: 1;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #374151;
+    font-size: 0.875rem;
+}
+
+.form-group .relative {
+    position: relative;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-family: inherit;
+}
+
+.form-group select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-family: inherit;
+    background-color: white;
+    cursor: pointer;
+}
+
+.form-group input[type="color"] {
+    width: 60px;
+    height: 40px;
+    padding: 2px;
+    border: 1px solid #d1d5db;
+    cursor: pointer;
+}
+
+.form-group input[type="range"] {
+    width: 100%;
+    cursor: pointer;
+    height: 6px;
+}
+
+.btn-section-toggle {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #e5e7eb;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+}
+
+.btn-section-toggle:hover {
+    background-color: #e5e7eb;
+    color: #374151;
+    border-color: #d1d5db;
+}
+
+.btn-section-toggle.hidden-section {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+.btn-section-toggle.hidden-section:hover {
+    background-color: #fecaca;
+    color: #991b1b;
+}
+
+.hidden-section-content {
+    display: none;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+#titleDropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 0.25rem;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 50;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#titleDropdown.hidden {
+    display: none !important;
+}
+
+#filterInput {
+    width: 100%;
+    padding: 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 0.875rem;
+    outline: none;
+}
+
+#filterInput:focus {
+    background-color: #f9fafb;
+    border-bottom-color: #10b981;
+}
+
+.dropdown-category {
+    padding-top: 0.5rem;
+}
+
+.category-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6b7280;
+    padding: 0.5rem 0.75rem 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.title-option {
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.15s;
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
+.title-option:hover {
+    background-color: rgba(16, 185, 129, 0.1);
+}
+
+.title-option.bg-emerald-50 {
+    background-color: #f0fdf4;
+    border-left: 4px solid #10b981;
+    padding: 0.75rem;
+    font-weight: 500;
+    color: #059669;
+    white-space: normal;
+}
+
+.title-option.bg-emerald-50:hover {
+    background-color: #dcfce7;
+}
+
+.title-option.hidden {
+    display: none !important;
+}
+
+.no-results {
+    padding: 1rem;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.875rem;
+}
+
+.btn-add {
+    background-color: #10b981;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    border: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.btn-add:hover {
+    background-color: #059669;
+}
+
+.btn-remove {
+    background-color: #ef4444;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.375rem;
+    border: none;
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.btn-remove:hover {
+    background-color: #dc2626;
+}
+
+.entry-item {
+    background: white;
+    padding: 0.75rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    margin-bottom: 0.75rem;
+    position: relative;
+}
+
+.entry-item .btn-remove {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 1;
+}
+
+/* Template 2 specific styling */
+body[data-template="2"] .editor-header {
+    border-bottom-color: #667eea;
+}
+
+body[data-template="2"] .editor-header h3 {
+    color: #667eea;
+}
+
+body[data-template="2"] .form-section.active {
+    background-color: #eef2ff;
+    border-color: #667eea;
+}
+
+body[data-template="2"] .preview-section:hover {
+    border-left-color: #667eea;
+}
+
+body[data-template="2"] .preview-section.clickable::after {
+    color: #667eea;
+}
+
+body[data-template="2"] .btn-add {
+    background-color: #667eea;
+}
+
+body[data-template="2"] .btn-add:hover {
+    background-color: #764ba2;
+}
+
+/* Print and PDF Styling */
+@media print {
+    body {
+        background: white;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: auto;
+    }
+
+    .resume-preview {
+        box-shadow: none !important;
+        border: none !important;
+        max-height: none !important;
+        height: auto !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+    }
+
+    .preview-section::after {
+        display: none !important;
+    }
+
+    .preview-section {
+        border-left: none !important;
+        background-color: transparent !important;
+        page-break-inside: avoid;
+        overflow: visible !important;
+        height: auto !important;
+        max-height: none !important;
+    }
+
+    .editor-container,
+    .editor-panel,
+    .editor-header,
+    button,
+    input[type="button"],
+    input[type="submit"],
+    .btn-add,
+    .btn-remove {
+        display: none !important;
+    }
+
+    p, li, h1, h2, h3, h4, h5, h6 {
+        page-break-after: avoid;
+        page-break-inside: avoid;
+        margin-top: 0 !important;
+    }
+
+    img {
+        max-width: 100%;
+        page-break-inside: avoid;
+    }
+
+    /* Ensure content flows properly */
+    * {
+        page-break-inside: avoid;
+    }
+
+    div {
+        page-break-inside: auto;
+    }
+}
+
+/* PDF-specific optimizations */
+.resume-preview {
+    background: white;
+    color: #000;
+}
+
+.resume-preview h1,
+.resume-preview h2,
+.resume-preview h3,
+.resume-preview h4,
+.resume-preview h5,
+.resume-preview h6 {
+    page-break-after: avoid;
+    color: inherit;
+}
+
+.resume-preview * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    color-adjust: exact;
+}
+
+.resume-preview p,
+.resume-preview div {
+    page-break-inside: avoid;
+}
