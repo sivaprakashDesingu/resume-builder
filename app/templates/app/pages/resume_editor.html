@@ -7,9 +7,16 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
-            {% if template_id == 1 %}
+            {% if is_empty %}
+                --primary-color: {{ template_color }};
+                --primary-dark: {{ template_color }};
+                --primary-light: {% if template_color == '#1f2937' %}#f3f4f6{% elif template_color == '#3b82f6' %}#eff6ff{% elif template_color == '#ec4899' %}#fdf2f8{% elif template_color == '#7c3aed' %}#f5f3ff{% else %}#f3f4f6{% endif %};
+                --border-color: {{ template_color }};
+                --text-primary: {{ template_color }};
+            {% elif template_id == 1 %}
                 --primary-color: #10b981;
                 --primary-dark: #059669;
                 --primary-light: #d1fae5;
@@ -160,6 +167,57 @@
             font-family: inherit;
             background-color: white;
             cursor: pointer;
+        }
+
+        .form-group input[type="color"] {
+            width: 60px;
+            height: 40px;
+            padding: 2px;
+            border: 1px solid #d1d5db;
+            cursor: pointer;
+        }
+
+        .form-group input[type="range"] {
+            width: 100%;
+            cursor: pointer;
+            height: 6px;
+        }
+
+        .btn-section-toggle {
+            background-color: #f3f4f6;
+            color: #6b7280;
+            border: 1px solid #e5e7eb;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+        }
+
+        .btn-section-toggle:hover {
+            background-color: #e5e7eb;
+            color: #374151;
+            border-color: #d1d5db;
+        }
+
+        .btn-section-toggle.hidden-section {
+            background-color: #fee2e2;
+            color: #dc2626;
+            border-color: #fecaca;
+        }
+
+        .btn-section-toggle.hidden-section:hover {
+            background-color: #fecaca;
+            color: #991b1b;
+        }
+
+        .hidden-section-content {
+            display: none;
         }
         
         .form-group textarea {
@@ -332,14 +390,110 @@
         body[data-template="2"] .btn-add:hover {
             background-color: #764ba2;
         }
+
+        /* Print and PDF Styling */
+        @media print {
+            body {
+                background: white;
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: auto;
+            }
+            
+            .resume-preview {
+                box-shadow: none !important;
+                border: none !important;
+                max-height: none !important;
+                height: auto !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+            }
+            
+            .preview-section::after {
+                display: none !important;
+            }
+            
+            .preview-section {
+                border-left: none !important;
+                background-color: transparent !important;
+                page-break-inside: avoid;
+                overflow: visible !important;
+                height: auto !important;
+                max-height: none !important;
+            }
+
+            .editor-container,
+            .editor-panel,
+            .editor-header,
+            button,
+            input[type="button"],
+            input[type="submit"],
+            .btn-add,
+            .btn-remove {
+                display: none !important;
+            }
+
+            p, li, h1, h2, h3, h4, h5, h6 {
+                page-break-after: avoid;
+                page-break-inside: avoid;
+                margin-top: 0 !important;
+            }
+
+            img {
+                max-width: 100%;
+                page-break-inside: avoid;
+            }
+
+            /* Ensure content flows properly */
+            * {
+                page-break-inside: avoid;
+            }
+
+            div {
+                page-break-inside: auto;
+            }
+        }
+
+        /* PDF-specific optimizations */
+        .resume-preview {
+            background: white;
+            color: #000;
+        }
+
+        .resume-preview h1,
+        .resume-preview h2,
+        .resume-preview h3,
+        .resume-preview h4,
+        .resume-preview h5,
+        .resume-preview h6 {
+            page-break-after: avoid;
+            color: inherit;
+        }
+
+        .resume-preview * {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            color-adjust: exact;
+        }
+
+        .resume-preview p,
+        .resume-preview div {
+            page-break-inside: avoid;
+        }
     </style>
 </head>
-<body class="font-sans bg-gray-100" data-template="{{ template_id }}">
+<body class="font-sans bg-gray-100" data-template="{{ template_id }}" data-is-empty="{% if is_empty %}true{% else %}false{% endif %}">
     <div class="flex flex-col h-screen">
         <!-- Header -->
         <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-6 shadow-lg flex justify-between items-center">
-            <h1 class="text-2xl font-bold">Resume Editor - Template {{ template_id }}</h1>
+            <h1 class="text-2xl font-bold">{% if is_empty %}Resume Builder - {{ template_name }} Template{% else %}Resume Editor - Template {{ template_id }}{% endif %}</h1>
             <div class="flex gap-4">
+                <button onclick="scrollToForm('styling-section')" title="Customize theme" class="bg-white hover:bg-gray-100 text-emerald-600 font-semibold px-4 py-2 rounded-lg transition flex items-center gap-2">
+                    <i class="fas fa-palette"></i>Styling
+                </button>
                 <a href="{% url 'resume_explorer' %}" style="background-color: var(--primary-dark);" class="hover:opacity-80 px-4 py-2 rounded-lg transition text-white">Back to Templates</a>
                 <button onclick="downloadResume()" style="color: var(--primary-color);" class="bg-white hover:bg-gray-100 font-semibold px-4 py-2 rounded-lg transition">Download PDF</button>
             </div>
@@ -347,8 +501,8 @@
 
         <!-- Main Container -->
         <div class="flex flex-1 overflow-hidden">
-            <!-- Full Resume Preview (shown by default) -->
-            <div id="resumePreviewContainer" class="w-full bg-gray-200 p-4 overflow-auto transition-all duration-300">
+            <!-- Resume Preview (always half width in 2-column layout) -->
+            <div id="resumePreviewContainer" class="w-1/2 bg-gray-200 p-4 overflow-auto transition-all duration-300">
                 <div class="resume-preview bg-white shadow-lg rounded-lg" id="resumePreview">
                     <!-- Resume content will be rendered here -->
                     <div class="p-8 sm:p-12">
@@ -379,10 +533,16 @@
 
                         <!-- Technical Skills -->
                         <div class="mb-6 preview-section clickable" onclick="scrollToForm('skills-section')">
-                            <h2 class="text-2xl font-bold text-gray-800 mb-3 pb-2" style="border-bottom: 2px solid var(--primary-color);">Technical Skills</h2>
-                            <div id="previewSkills" class="space-y-3">
-                                <p class="text-gray-700 text-sm">Add your technical skills here.</p>
-                            </div>
+                            <h2 class="text-2xl font-bold text-gray-800 mb-3 pb-2" style="border-bottom: 2px solid var(--primary-color);">{% if template_id == 2 %}Skills{% else %}Technical Skills{% endif %}</h2>
+                            {% if template_id == 2 %}
+                                <div id="previewSkills" class="flex flex-wrap gap-2">
+                                    <p class="text-gray-700 text-sm w-full">Add your skills here.</p>
+                                </div>
+                            {% else %}
+                                <div id="previewSkills" class="space-y-3">
+                                    <p class="text-gray-700 text-sm">Add your technical skills here.</p>
+                                </div>
+                            {% endif %}
                         </div>
 
                         <!-- Education -->
@@ -399,13 +559,10 @@
                 </div>
             </div>
 
-            <!-- Editor Panel (hidden by default, shows on section click) -->
-            <div id="editorContainer" class="hidden w-1/2 bg-white editor-panel border-l border-gray-300 transition-all duration-300">
-                <div class="editor-header">
-                    <h3 class="text-lg font-bold text-gray-800">Edit Section</h3>
-                    <button type="button" onclick="closeEditorPanel()" class="text-gray-600 hover:text-red-600 transition" title="Close">
-                        <i class="fas fa-times"></i>
-                    </button>
+            <!-- Editor Panel (always visible in 2-column layout) -->
+            <div id="editorContainer" class="w-1/2 bg-white editor-panel border-l border-gray-300 overflow-y-auto">
+                <div class="sticky top-0 z-30 bg-white editor-header" style="padding-left: 45px;">
+                    <h3 class="text-lg font-bold text-gray-800">Edit Resume</h3>
                 </div>
                 <div class="p-6">
                     <form id="resumeForm" class="space-y-4">
@@ -499,16 +656,26 @@
                     </div>
 
                     <!-- Professional Summary -->
-                    <div class="form-section" id="summary-section">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">Professional Summary</h3>
+                    <div class="form-section" id="summary-section" class="section-container">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-gray-800">Professional Summary</h3>
+                            <button type="button" class="btn-section-toggle" onclick="toggleSection('summary-section', 'previewSummary')" title="Hide this section">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
                         <div class="form-group">
                             <textarea id="summary" placeholder="Enter your professional summary..." class="form-control" onchange="updatePreview()">{{ summary }}</textarea>
                         </div>
                     </div>
 
                     <!-- Professional Experience -->
-                    <div class="form-section" id="experience-section">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">Professional Experience</h3>
+                    <div class="form-section" id="experience-section" class="section-container">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-gray-800">Professional Experience</h3>
+                            <button type="button" class="btn-section-toggle" onclick="toggleSection('experience-section', 'previewExperience')" title="Hide this section">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
                         <div id="experienceContainer" class="space-y-3 mb-4"></div>
                         <button type="button" class="btn-add" onclick="addExperience()">
                             <i class="fas fa-plus mr-2"></i>Add Experience
@@ -516,20 +683,115 @@
                     </div>
 
                     <!-- Technical Skills -->
-                    <div class="form-section" id="skills-section">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">Technical Skills</h3>
+                    <div class="form-section" id="skills-section" class="section-container">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-gray-800">{% if template_id == 2 %}Skills{% else %}Technical Skills{% endif %}</h3>
+                            <button type="button" class="btn-section-toggle" onclick="toggleSection('skills-section', 'previewSkills')" title="Hide this section">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
                         <div id="skillsContainer" class="space-y-3 mb-4"></div>
-                        <button type="button" class="btn-add" onclick="addSkill()">
-                            <i class="fas fa-plus mr-2"></i>Add Skill
-                        </button>
+                        {% if template_id == 2 %}
+                            <button type="button" class="btn-add w-full" onclick="addSkill()">
+                                <i class="fas fa-plus mr-2"></i>Add Skill
+                            </button>
+                        {% else %}
+                            <button type="button" class="btn-add" onclick="addSkill()">
+                                <i class="fas fa-plus mr-2"></i>Add Skill
+                            </button>
+                        {% endif %}
                     </div>
 
                     <!-- Education -->
-                    <div class="form-section" id="education-section">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">Education</h3>
+                    <div class="form-section" id="education-section" class="section-container">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-gray-800">Education</h3>
+                            <button type="button" class="btn-section-toggle" onclick="toggleSection('education-section', 'previewEducation')" title="Hide this section">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
                         <div id="educationContainer" class="space-y-3 mb-4"></div>
                         <button type="button" class="btn-add" onclick="addEducation()">
                             <i class="fas fa-plus mr-2"></i>Add Education
+                        </button>
+                    </div>
+
+                    <!-- Custom Sections -->
+                    <div class="form-section" id="custom-sections" class="section-container">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-gray-800">Additional Sections</h3>
+                            <button type="button" class="btn-section-toggle" onclick="toggleSection('custom-sections', 'previewCustomSections')" title="Hide this section">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div id="customSectionsContainer" class="space-y-3 mb-4"></div>
+                        <button type="button" class="btn-add" onclick="addCustomSection()">
+                            <i class="fas fa-plus mr-2"></i>Add Custom Section
+                        </button>
+                    </div>
+
+                    <!-- Resume Styling & Customization -->
+                    <div class="form-section" id="styling-section">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">🎨 Resume Styling</h3>
+                        
+                        <!-- Primary Color -->
+                        <div class="form-group">
+                            <label for="primaryColor">Primary Color</label>
+                            <div class="flex gap-2 items-center">
+                                <input type="color" id="primaryColor" class="form-control w-16 h-10 cursor-pointer" value="#10b981" onchange="updateResumeStyling()">
+                                <input type="text" id="primaryColorHex" class="form-control flex-1" value="#10b981" onchange="updateColorFromHex('primaryColor')" placeholder="#10b981">
+                            </div>
+                            <small class="text-gray-600 mt-1 block">Used for headings, borders, and accents</small>
+                        </div>
+
+                        <!-- Accent Color -->
+                        <div class="form-group">
+                            <label for="accentColor">Accent Color</label>
+                            <div class="flex gap-2 items-center">
+                                <input type="color" id="accentColor" class="form-control w-16 h-10 cursor-pointer" value="#059669" onchange="updateResumeStyling()">
+                                <input type="text" id="accentColorHex" class="form-control flex-1" value="#059669" onchange="updateColorFromHex('accentColor')" placeholder="#059669">
+                            </div>
+                            <small class="text-gray-600 mt-1 block">Used for highlights and section titles</small>
+                        </div>
+
+                        <!-- Font Family -->
+                        <div class="form-group">
+                            <label for="fontFamily">Font Family</label>
+                            <select id="fontFamily" class="form-control" onchange="updateResumeStyling()">
+                                <option value="'Inter', sans-serif">Modern (Inter)</option>
+                                <option value="'Playfair Display', serif">Classic (Playfair Display)</option>
+                                <option value="'Georgia', serif">Elegant (Georgia)</option>
+                                <option value="'Lato', sans-serif">Clean (Lato)</option>
+                                <option value="'Roboto', sans-serif">Professional (Roboto)</option>
+                                <option value="'Cambria', serif">Formal (Cambria)</option>
+                                <option value="'Courier New', monospace">Technical (Courier New)</option>
+                            </select>
+                        </div>
+
+                        <!-- Font Size Scale -->
+                        <div class="form-group">
+                            <label for="fontSizeScale">Font Size: <span id="fontSizeLabel">100%</span></label>
+                            <input type="range" id="fontSizeScale" min="80" max="120" value="100" step="5" class="w-full cursor-pointer" onchange="updateResumeStyling()">
+                            <small class="text-gray-600 mt-1 block">Adjust text size for readability (80% - 120%)</small>
+                        </div>
+
+                        <!-- Line Height -->
+                        <div class="form-group">
+                            <label for="lineHeight">Line Height: <span id="lineHeightLabel">1.6</span></label>
+                            <input type="range" id="lineHeight" min="1.4" max="2.0" value="1.6" step="0.1" class="w-full cursor-pointer" onchange="updateResumeStyling()">
+                            <small class="text-gray-600 mt-1 block">Adjust spacing between lines (1.4 - 2.0)</small>
+                        </div>
+
+                        <!-- Section Spacing -->
+                        <div class="form-group">
+                            <label for="sectionSpacing">Section Spacing: <span id="spacingLabel">1.5rem</span></label>
+                            <input type="range" id="sectionSpacing" min="1" max="3" value="1.5" step="0.25" class="w-full cursor-pointer" onchange="updateResumeStyling()">
+                            <small class="text-gray-600 mt-1 block">Space between sections (1 - 3 rem)</small>
+                        </div>
+
+                        <!-- Reset Button -->
+                        <button type="button" class="btn-add w-full mt-4" onclick="resetStyling()">
+                            <i class="fas fa-redo mr-2"></i>Reset to Default
                         </button>
                     </div>
 
@@ -661,26 +923,20 @@
         });
 
         function scrollToForm(sectionId) {
-            // Show editor container
-            const editorContainer = document.getElementById('editorContainer');
-            const resumeContainer = document.getElementById('resumePreviewContainer');
-            
-            editorContainer.classList.remove('hidden');
-            resumeContainer.classList.remove('w-full');
-            resumeContainer.classList.add('w-1/2');
-            
-            // Remove active class from all sections
-            document.querySelectorAll('.form-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // Add active class to target section
+            // Scroll the editor panel to the specific section
+            const editorPanel = document.querySelector('.editor-panel');
             const targetSection = document.getElementById(sectionId);
-            if (targetSection) {
+            
+            if (targetSection && editorPanel) {
+                // Remove active class from all sections
+                document.querySelectorAll('.form-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                // Add active class to target section
                 targetSection.classList.add('active');
                 
                 // Scroll to section
-                const editorPanel = document.querySelector('.editor-panel');
                 const sectionTop = targetSection.offsetTop;
                 editorPanel.scrollTo({
                     top: sectionTop - 100,
@@ -696,17 +952,8 @@
         }
 
         function closeEditorPanel() {
-            const editorContainer = document.getElementById('editorContainer');
-            const resumeContainer = document.getElementById('resumePreviewContainer');
-            
-            editorContainer.classList.add('hidden');
-            resumeContainer.classList.remove('w-1/2');
-            resumeContainer.classList.add('w-full');
-            
-            // Remove active state from all sections
-            document.querySelectorAll('.form-section').forEach(section => {
-                section.classList.remove('active');
-            });
+            // This function is no longer used in 2-column layout
+            // Keeping it for backward compatibility
         }
 
         function updatePreview() {
@@ -736,19 +983,34 @@
         function addSkill() {
             const container = document.getElementById('skillsContainer');
             const id = skillCount++;
+            const templateId = {{ template_id }};
             
-            const html = `
-                <div class="entry-item" id="skill-${id}">
-                    <button type="button" class="btn-remove" onclick="removeSkill(${id})">Remove</button>
-                    <div class="form-group mb-2">
-                        <input type="text" placeholder="Skill Name (e.g., React, Python, Docker)" class="form-control skill-name-${id}" onchange="updatePreview()">
+            let html;
+            if (templateId === 2) {
+                // Template 2: Simple skill name only
+                html = `
+                    <div class="entry-item" id="skill-${id}">
+                        <button type="button" class="btn-remove" onclick="removeSkill(${id})">Remove</button>
+                        <div class="form-group mb-2">
+                            <input type="text" placeholder="Skill Name (e.g., Product Strategy, Analytics)" class="form-control skill-name-${id}" onchange="updatePreview()">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Expertise Level (%)</label>
-                        <input type="number" min="0" max="100" placeholder="85" class="form-control skill-level-${id}" onchange="updatePreview()" value="80">
+                `;
+            } else {
+                // Other templates: Skill name + expertise level
+                html = `
+                    <div class="entry-item" id="skill-${id}">
+                        <button type="button" class="btn-remove" onclick="removeSkill(${id})">Remove</button>
+                        <div class="form-group mb-2">
+                            <input type="text" placeholder="Skill Name (e.g., React, Python, Docker)" class="form-control skill-name-${id}" onchange="updatePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label>Expertise Level (%)</label>
+                            <input type="number" min="0" max="100" placeholder="85" class="form-control skill-level-${id}" onchange="updatePreview()" value="80">
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
             
             container.insertAdjacentHTML('beforeend', html);
         }
@@ -764,31 +1026,53 @@
         function updateSkillsPreview() {
             const container = document.getElementById('previewSkills');
             container.innerHTML = '';
+            const templateId = {{ template_id }};
             
             let hasSkills = false;
+            const skillElements = [];
+            
             for (let i = 0; i < skillCount; i++) {
                 const name = document.querySelector(`.skill-name-${i}`)?.value;
                 const level = document.querySelector(`.skill-level-${i}`)?.value || 80;
                 
                 if (name) {
                     hasSkills = true;
+                    skillElements.push({ name, level });
+                }
+            }
+            
+            if (templateId === 2) {
+                // Template 2: Display as skill tags/badges
+                if (hasSkills) {
+                    const tagHtml = skillElements.map(skill => `
+                        <span class="inline-block px-3 py-1 rounded-full text-sm font-medium" style="background-color: var(--primary-light); color: var(--text-primary); border: 1px solid var(--primary-color);">
+                            ${skill.name}
+                        </span>
+                    `).join('');
+                    container.insertAdjacentHTML('beforeend', tagHtml);
+                } else {
+                    container.innerHTML = '<p class="text-gray-700 text-sm">Add your skills here.</p>';
+                }
+            } else {
+                // Other templates: Display with expertise bars
+                skillElements.forEach(skill => {
                     const html = `
                         <div>
                             <div class="flex justify-between mb-1">
-                                <span class="font-semibold text-gray-800 text-sm">${name}</span>
-                                <span class="text-xs text-gray-600 font-bold">${level}%</span>
+                                <span class="font-semibold text-gray-800 text-sm">${skill.name}</span>
+                                <span class="text-xs text-gray-600 font-bold">${skill.level}%</span>
                             </div>
                             <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div style="background: linear-gradient(to right, var(--primary-color), var(--primary-dark)); width: ${level}%; height: 100%; border-radius: 9999px;"></div>
+                                <div style="background: linear-gradient(to right, var(--primary-color), var(--primary-dark)); width: ${skill.level}%; height: 100%; border-radius: 9999px;"></div>
                             </div>
                         </div>
                     `;
                     container.insertAdjacentHTML('beforeend', html);
+                });
+                
+                if (!hasSkills) {
+                    container.innerHTML = '<p class="text-gray-700 text-sm">Add your technical skills here.</p>';
                 }
-            }
-            
-            if (!hasSkills) {
-                container.innerHTML = '<p class="text-gray-700 text-sm">Add your technical skills here.</p>';
             }
         }
 
@@ -955,11 +1239,145 @@
         }
 
         function downloadResume() {
-            alert('PDF download feature coming soon!');
+            const fullName = document.getElementById('fullName').value || 'resume';
+            const resumeElement = document.getElementById('resumePreview');
+            
+            // Create a temporary container for PDF generation with A4 dimensions
+            const tempContainer = document.createElement('div');
+            tempContainer.style.position = 'fixed';
+            tempContainer.style.top = '0';
+            tempContainer.style.left = '-10000px';
+            tempContainer.style.width = '210mm';
+            tempContainer.style.height = 'auto';
+            tempContainer.style.backgroundColor = 'white';
+            tempContainer.style.padding = '10mm';
+            tempContainer.style.zIndex = '-9999';
+            
+            // Clone the resume element
+            const clonedResume = resumeElement.cloneNode(true);
+            
+            // Ensure proper styling
+            clonedResume.style.width = '100%';
+            clonedResume.style.height = 'auto';
+            clonedResume.style.margin = '0';
+            clonedResume.style.padding = '0';
+            clonedResume.style.border = 'none';
+            clonedResume.style.boxShadow = 'none';
+            clonedResume.style.backgroundColor = 'white';
+            clonedResume.style.color = '#000';
+            clonedResume.style.maxHeight = 'none';
+            clonedResume.style.overflow = 'visible';
+            
+            // Ensure all children are visible and properly sized
+            const allElements = clonedResume.querySelectorAll('*');
+            allElements.forEach(el => {
+                const computed = window.getComputedStyle(el);
+                el.style.pageBreakInside = 'avoid';
+                el.style.maxHeight = 'none';
+                el.style.overflow = 'visible';
+                
+                // Preserve colors and important styles
+                if (computed.color) el.style.color = computed.color;
+                if (computed.backgroundColor && computed.backgroundColor !== 'rgba(0, 0, 0, 0)') {
+                    el.style.backgroundColor = computed.backgroundColor;
+                }
+            });
+            
+            // Remove preview section overlay effects
+            clonedResume.querySelectorAll('.preview-section').forEach(el => {
+                el.style.cursor = 'auto';
+                el.style.position = 'relative';
+                el.style.transition = 'none';
+            });
+            
+            tempContainer.appendChild(clonedResume);
+            document.body.appendChild(tempContainer);
+            
+            // Wait for content to render before generating PDF
+            setTimeout(() => {
+                // Configuration for html2pdf
+                const options = {
+                    margin: [5, 5, 5, 5],
+                    filename: `${fullName.replace(/\s+/g, '_')}_resume.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { 
+                        scale: 2,
+                        useCORS: true,
+                        logging: false,
+                        backgroundColor: '#ffffff',
+                        allowTaint: true,
+                        windowHeight: clonedResume.scrollHeight || clonedResume.offsetHeight
+                    },
+                    jsPDF: { 
+                        orientation: 'portrait', 
+                        unit: 'mm', 
+                        format: 'a4',
+                        compress: true
+                    },
+                    pagebreak: { 
+                        mode: ['avoid-all', 'css', 'legacy'],
+                        before: '.page-break',
+                        after: '.page-break-after'
+                    }
+                };
+                
+                // Generate and download PDF
+                html2pdf()
+                    .set(options)
+                    .from(clonedResume)
+                    .save()
+                    .then(() => {
+                        // Remove temporary container
+                        document.body.removeChild(tempContainer);
+                    })
+                    .catch(err => {
+                        console.error('PDF generation error:', err);
+                        document.body.removeChild(tempContainer);
+                    });
+            }, 100);
+        }
+
+        function toggleSection(sectionId, previewId) {
+            const formSection = document.getElementById(sectionId);
+            const previewSection = document.getElementById(previewId);
+            const toggleBtn = event.currentTarget;
+            
+            if (formSection.classList.contains('hidden-section-content')) {
+                // Show section
+                formSection.classList.remove('hidden-section-content');
+                if (previewSection) previewSection.style.display = '';
+                toggleBtn.classList.remove('hidden-section');
+                toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
+                toggleBtn.title = 'Hide this section';
+            } else {
+                // Hide section
+                formSection.classList.add('hidden-section-content');
+                if (previewSection) previewSection.parentElement.style.display = 'none';
+                toggleBtn.classList.add('hidden-section');
+                toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+                toggleBtn.title = 'Show this section';
+            }
         }
 
         // Initialize preview on page load
         window.addEventListener('load', () => {
+            // Load basic information
+            const basicFields = {
+                fullName: '{{ fullName }}',
+                professionalTitle: '{{ professionalTitle }}',
+                email: '{{ email }}',
+                phone: '{{ phone }}',
+                location: '{{ location }}',
+                summary: '{{ summary }}'
+            };
+            
+            document.getElementById('fullName').value = basicFields.fullName;
+            document.getElementById('professionalTitle').value = basicFields.professionalTitle;
+            document.getElementById('email').value = basicFields.email;
+            document.getElementById('phone').value = basicFields.phone;
+            document.getElementById('location').value = basicFields.location;
+            document.getElementById('summary').value = basicFields.summary;
+            
             // Load prefilled experiences
             if (prefillData.experiences && prefillData.experiences.length > 0) {
                 prefillData.experiences.forEach(exp => {
@@ -989,7 +1407,11 @@
                     addSkill();
                     const lastId = skillCount - 1;
                     document.querySelector(`.skill-name-${lastId}`).value = skill.name;
-                    document.querySelector(`.skill-level-${lastId}`).value = skill.level;
+                    // Only set level for non-Template 2
+                    const levelInput = document.querySelector(`.skill-level-${lastId}`);
+                    if (levelInput) {
+                        levelInput.value = skill.level;
+                    }
                 });
             }
             
@@ -1005,6 +1427,108 @@
             
             updatePreview();
         });
+
+        // Styling customization functions
+        function updateResumeStyling() {
+            const primaryColor = document.getElementById('primaryColor').value;
+            const accentColor = document.getElementById('accentColor').value;
+            const fontFamily = document.getElementById('fontFamily').value;
+            const fontSizeScale = document.getElementById('fontSizeScale').value;
+            const lineHeight = document.getElementById('lineHeight').value;
+            const sectionSpacing = document.getElementById('sectionSpacing').value;
+            
+            // Update labels
+            document.getElementById('fontSizeLabel').textContent = fontSizeScale + '%';
+            document.getElementById('lineHeightLabel').textContent = lineHeight;
+            document.getElementById('spacingLabel').textContent = sectionSpacing + 'rem';
+            
+            // Update color hex inputs
+            document.getElementById('primaryColorHex').value = primaryColor;
+            document.getElementById('accentColorHex').value = accentColor;
+            
+            // Get the preview container
+            const resumePreview = document.getElementById('resumePreview');
+            
+            // Apply styles to resume preview
+            resumePreview.style.fontFamily = fontFamily;
+            resumePreview.style.fontSize = (16 * fontSizeScale / 100) + 'px';
+            resumePreview.style.lineHeight = lineHeight;
+            
+            // Update CSS variables
+            document.documentElement.style.setProperty('--primary-color', primaryColor);
+            document.documentElement.style.setProperty('--primary-dark', darkenColor(primaryColor, 0.15));
+            document.documentElement.style.setProperty('--primary-light', lightenColor(primaryColor, 0.85));
+            document.documentElement.style.setProperty('--border-color', primaryColor);
+            document.documentElement.style.setProperty('--text-primary', accentColor);
+            
+            // Update section margins
+            const sections = resumePreview.querySelectorAll('[class*="mb-6"]');
+            sections.forEach(section => {
+                section.style.marginBottom = sectionSpacing + 'rem';
+            });
+            
+            // Update headings color
+            const headings = resumePreview.querySelectorAll('h1, h2, h3, h4, h5, h6');
+            headings.forEach(heading => {
+                heading.style.color = accentColor;
+            });
+            
+            // Update section borders
+            const sectionHeaders = resumePreview.querySelectorAll('[style*="border-bottom"]');
+            sectionHeaders.forEach(header => {
+                header.style.borderBottomColor = primaryColor;
+            });
+        }
+
+        function updateColorFromHex(inputType) {
+            const hexInput = document.getElementById(inputType + 'Hex');
+            const colorInput = document.getElementById(inputType);
+            const hexValue = hexInput.value.trim();
+            
+            // Validate hex color
+            if (/^#[0-9A-F]{6}$/i.test(hexValue)) {
+                colorInput.value = hexValue;
+                updateResumeStyling();
+            } else {
+                // Reset to current color if invalid
+                hexInput.value = colorInput.value;
+            }
+        }
+
+        function lightenColor(color, percent) {
+            const rgb = parseInt(color.slice(1), 16);
+            const r = Math.floor((rgb >> 16) * percent + 255 * (1 - percent));
+            const g = Math.floor((rgb >> 8 & 255) * percent + 255 * (1 - percent));
+            const b = Math.floor((rgb & 255) * percent + 255 * (1 - percent));
+            return '#' + [r, g, b].map(x => {
+                const hex = x.toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            }).join('').toUpperCase();
+        }
+
+        function darkenColor(color, percent) {
+            const rgb = parseInt(color.slice(1), 16);
+            const r = Math.floor((rgb >> 16) * percent);
+            const g = Math.floor((rgb >> 8 & 255) * percent);
+            const b = Math.floor((rgb & 255) * percent);
+            return '#' + [r, g, b].map(x => {
+                const hex = x.toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            }).join('').toUpperCase();
+        }
+
+        function resetStyling() {
+            // Reset to default values
+            document.getElementById('primaryColor').value = '#10b981';
+            document.getElementById('accentColor').value = '#059669';
+            document.getElementById('fontFamily').value = "'Inter', sans-serif";
+            document.getElementById('fontSizeScale').value = '100';
+            document.getElementById('lineHeight').value = '1.6';
+            document.getElementById('sectionSpacing').value = '1.5';
+            
+            // Apply changes
+            updateResumeStyling();
+        }
     </script>
 </body>
 </html>
