@@ -143,7 +143,159 @@ def resume_editor(request, pk: int):
                     'school': 'University of Washington',
                     'year': 'Graduated: May 2015'
                 }
+            ],
+            'customSections': [
+                {
+                    'title': 'Certifications',
+                    'content': '• Pragmatic Marketing Certified (PMC)\n• Certified Scrum Product Owner (CSPO)\n• Google Analytics Certification'
+                }
             ]
+        }
+    elif pk == 3:
+        # Template 3 - Designer (Golden/Creative theme)
+        template_data = {
+            'template_id': pk,
+            'fullName': 'Alex Rivera',
+            'professionalTitle': 'Senior UX/UI Designer',
+            'email': 'alex.rivera@creative.studio',
+            'phone': '+1 (323) 555-6789',
+            'location': 'Los Angeles, CA',
+            'summary': 'Innovative UX/UI Designer with 7+ years of experience creating intuitive and visually compelling digital experiences. Proven expertise in user-centered design, design systems, and cross-platform applications. Passionate about solving complex design challenges and mentoring design teams.',
+            'skills': [
+                {'name': 'UI/UX Design', 'level': 95},
+                {'name': 'Figma', 'level': 93},
+                {'name': 'Design Systems', 'level': 90},
+                {'name': 'User Research', 'level': 88},
+                {'name': 'Prototyping', 'level': 92},
+                {'name': 'Adobe Creative Suite', 'level': 89},
+                {'name': 'Wireframing', 'level': 91},
+                {'name': 'Interaction Design', 'level': 90},
+                {'name': 'HTML/CSS Basics', 'level': 75},
+            ],
+            'experiences': [
+                {
+                    'title': 'Senior UX/UI Designer',
+                    'company': 'Creative Tech Studios',
+                    'duration': 'Aug 2020 – Present',
+                    'description': '• Led design system creation for enterprise platform used by 100K+ users\n• Conducted user research and usability testing for 15+ product releases\n• Mentored team of 4 designers, improving design consistency and quality\n• Reduced design-to-development handoff time by 50% through better documentation'
+                },
+                {
+                    'title': 'UX/UI Designer',
+                    'company': 'Digital Design Agency',
+                    'duration': 'Jan 2018 – Jul 2020',
+                    'description': '• Designed user interfaces for 20+ web and mobile applications\n• Collaborated with product and engineering teams to deliver user-centered solutions\n• Conducted 100+ user interviews and usability tests\n• Improved user satisfaction scores by 40% across portfolio of projects'
+                },
+                {
+                    'title': 'Junior Designer',
+                    'company': 'StartUp Designs',
+                    'duration': 'Jun 2016 – Dec 2017',
+                    'description': '• Created wireframes, mockups, and prototypes for web applications\n• Assisted in user research and competitive analysis'
+                }
+            ],
+            'educations': [
+                {
+                    'degree': 'Master of Fine Arts in Interaction Design',
+                    'school': 'School of Visual Arts, New York',
+                    'year': 'Graduated: May 2016'
+                },
+                {
+                    'degree': 'Bachelor of Fine Arts in Graphic Design',
+                    'school': 'California Institute of the Arts',
+                    'year': 'Graduated: May 2014'
+                }
+            ],
+            'customSections': [
+                {
+                    'title': 'Design Awards & Recognition',
+                    'content': '• Best UX Design - Tech Design Awards 2023\n• Featured Designer - Design Community Monthly\n• Speaker - UX Design Conference 2022'
+                }
+            ]
+        }
+    elif pk == 4:
+        # Template 4 - Executive (Classic Dark theme)
+        template_data = {
+            'template_id': pk,
+            'fullName': 'Margaret Johnson',
+            'professionalTitle': 'Chief Technology Officer',
+            'email': 'margaret.johnson@executive.com',
+            'phone': '+1 (212) 555-9999',
+            'location': 'New York, NY',
+            'summary': 'Strategic technology executive with 15+ years of experience leading digital transformation initiatives and building world-class engineering organizations. Proven track record of driving innovation, managing multi-million dollar technology budgets, and delivering transformational business results. Expertise in cloud infrastructure, team building, and enterprise architecture.',
+            'skills': [
+                {'name': 'Strategic Leadership', 'level': 95},
+                {'name': 'Technology Strategy', 'level': 93},
+                {'name': 'Cloud Architecture', 'level': 90},
+                {'name': 'Team Management', 'level': 92},
+                {'name': 'Budget Management', 'level': 88},
+                {'name': 'Digital Transformation', 'level': 91},
+                {'name': 'Enterprise Architecture', 'level': 89},
+                {'name': 'Stakeholder Management', 'level': 94},
+            ],
+            'experiences': [
+                {
+                    'title': 'Chief Technology Officer',
+                    'company': 'Global Tech Corporation',
+                    'duration': 'Jan 2020 – Present',
+                    'description': '• Oversee $100M technology budget and team of 150+ engineers\n• Led cloud migration saving $30M annually\n• Reduced infrastructure costs by 40% through optimization\n• Established technical excellence standards across organization'
+                },
+                {
+                    'title': 'VP of Engineering',
+                    'company': 'Enterprise Solutions Ltd.',
+                    'duration': 'Mar 2016 – Dec 2019',
+                    'description': '• Built and scaled engineering team from 30 to 120 people\n• Implemented agile practices improving delivery speed by 60%\n• Led successful acquisition integration of 3 tech companies'
+                },
+                {
+                    'title': 'Director of Software Engineering',
+                    'company': 'Tech Ventures',
+                    'duration': 'Jul 2012 – Feb 2016',
+                    'description': '• Managed 50+ engineers across multiple product lines\n• Improved system reliability from 95% to 99.9% uptime'
+                }
+            ],
+            'educations': [
+                {
+                    'degree': 'Master of Business Administration (MBA)',
+                    'school': 'Harvard Business School',
+                    'year': 'Graduated: May 2009'
+                },
+                {
+                    'degree': 'Bachelor of Science in Computer Science',
+                    'school': 'Stanford University',
+                    'year': 'Graduated: May 2007'
+                }
+            ],
+            'customSections': [
+                {
+                    'title': 'Industry Recognition',
+                    'content': '• Listed in Forbes 30 Under 40 in Technology\n• Board Member - Tech Education Foundation\n• Speaker - International Tech Summit'
+                }
+            ]
+        }
+    elif pk >= 11:
+        # Empty templates - used for creating new resumes from scratch
+        template_id_map = {
+            11: {'title': 'Minimalist', 'color': '#1f2937'},  # Dark Gray
+            12: {'title': 'Modern', 'color': '#3b82f6'},      # Blue
+            13: {'title': 'Creative', 'color': '#ec4899'},    # Pink
+            14: {'title': 'Professional', 'color': '#7c3aed'}, # Violet
+        }
+        
+        template_info = template_id_map.get(pk, {'title': 'Blank', 'color': '#6b7280'})
+        
+        template_data = {
+            'template_id': pk,
+            'template_name': template_info['title'],
+            'template_color': template_info['color'],
+            'is_empty': True,
+            'fullName': '',
+            'professionalTitle': '',
+            'email': '',
+            'phone': '',
+            'location': '',
+            'summary': '',
+            'skills': [],
+            'experiences': [],
+            'educations': [],
+            'customSections': []
         }
     else:
         # Default fallback
@@ -155,9 +307,10 @@ def resume_editor(request, pk: int):
             'phone': '+1 (555) 123-4567',
             'location': 'City, State',
             'summary': 'Your professional summary here.',
-            'skills': 'Your skills here',
+            'skills': [],
             'experiences': [],
-            'educations': []
+            'educations': [],
+            'customSections': []
         }
     
     return render(request, 'app/pages/resume_editor.html', template_data)
