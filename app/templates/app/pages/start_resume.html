@@ -1,0 +1,355 @@
+{% extends 'app/base.html' %}
+
+{% block title %}Start Your Resume{% endblock %}
+
+{% block content %}
+<section class="resume-start-frm-sec bg-slate-50 flex items-center justify-center pt-20">
+  <div class="container mx-auto px-6 max-w-3xl">
+    <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-0 overflow-hidden">
+      <!-- Header / Progress -->
+      <div class="px-6 md:px-10 pt-6 pb-4 bg-gradient-to-r from-brand-600 to-purple-600 text-white border-b border-transparent">
+        <div class="flex items-center justify-between gap-4">
+          <h1 class="text-xl md:text-2xl font-bold text-white">Let's build your resume</h1>
+          <a href="{% url 'home' %}" class="text-white/90 hover:text-white text-sm font-semibold">Exit</a>
+        </div>
+        <div class="mt-4">
+          <div class="h-2 bg-white/30 rounded-full overflow-hidden">
+            <div id="progressBar" class="h-2 bg-white rounded-full transition-all duration-300" style="width: 0%"></div>
+          </div>
+          <p id="progressText" class="text-xs text-white/80 mt-2">Step 1 of 5</p>
+        </div>
+      </div>
+
+      <!-- Conversation Area -->
+      <div class="p-6 md:p-10">
+        <div id="conversationContainer" class="space-y-6">
+          <!-- Dynamic content injected by JS -->
+        </div>
+
+        <!-- Controls -->
+        <div class="mt-8 flex items-center justify-between">
+          <button id="backBtn" type="button" class="px-5 py-2.5 rounded-lg border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed">Back</button>
+          <div class="flex items-center gap-3">
+            <button id="skipBtn" type="button" class="hidden px-5 py-2.5 rounded-lg text-slate-600 hover:text-slate-800">Skip</button>
+            <button id="nextBtn" type="button" class="px-5 py-2.5 rounded-lg text-white font-semibold bg-gradient-to-r from-brand-600 to-purple-600 hover:from-brand-700 hover:to-purple-700 disabled:opacity-40 disabled:cursor-not-allowed">Next</button>
+          </div>
+        </div>
+
+        <!-- Hidden submit form -->
+        <form id="submitForm" method="post" class="hidden">
+          {% csrf_token %}
+          <input type="hidden" name="name" id="nameHidden">
+          <input type="hidden" name="domain" id="domainHidden">
+          <input type="hidden" name="email" id="emailHidden">
+          <input type="hidden" name="years" id="yearsHidden">
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Steps definition
+  const steps = [
+        {
+      key: 'name',
+      type: 'input',
+      label: 'What\'s your full name?',
+      placeholder: 'e.g., Jane Doe',
+      validator: (v) => v && v.trim().length >= 2 || 'Please enter your full name',
+    },
+    {
+      key: 'domain',
+      type: 'select',
+      label: 'What role or domain are you targeting?',
+      helper: 'We\'ll set this as your professional title and suggest skills.',
+      validator: (v) => v && v.trim().length >= 2 || 'Please select a role or enter a custom one',
+    },
+    {
+      key: 'email',
+      type: 'input',
+      label: 'What\'s your email?',
+      placeholder: 'you@example.com',
+      validator: (v) => (/^\S+@\S+\.\S+$/.test(v) ? true : 'Enter a valid email address'),
+    },
+    {
+      key: 'years',
+      type: 'choice',
+      label: 'How long have you been working?',
+      helper: "We'll find the best templates for your experience level.",
+      validator: (v) => v && v.trim().length > 0 || 'Please select an option',
+    },
+    {
+      key: 'review',
+      type: 'review',
+      title: 'Review',
+    }
+  ];
+
+  const state = { name: '', domain: '', email: '', years: '' };
+  let index = 0;
+
+  const container = document.getElementById('conversationContainer');
+  const nextBtn = document.getElementById('nextBtn');
+  const backBtn = document.getElementById('backBtn');
+  const skipBtn = document.getElementById('skipBtn');
+  const progressBar = document.getElementById('progressBar');
+  const progressText = document.getElementById('progressText');
+
+  function render() {
+    const step = steps[index];
+    container.innerHTML = '';
+
+    // Progress (count intro and review as steps)
+    const totalSteps = steps.length;
+    const pct = Math.round(((index + 1) / totalSteps) * 100);
+    progressBar.style.width = pct + '%';
+    progressText.textContent = `Step ${index + 1} of ${totalSteps}`;
+
+    // Back button visibility
+    backBtn.disabled = index === 0;
+
+    // Skip visibility
+    skipBtn.classList.toggle('hidden', !(step.key === 'years'));
+
+    // Next button label
+    nextBtn.textContent = step.key === 'review' ? 'Build My Resume' : (step.nextLabel || 'Next');
+
+    if (step.type === 'input') {
+      const currentVal = state[step.key] || '';
+      const numericAttrs = step.inputMode === 'numeric' ? ' inputmode="numeric" pattern="[0-9]*" ' : '';
+      const helper = step.helper ? `<p class=\"text-xs text-slate-500 mt-2\">${step.helper}</p>` : '';
+      const html = `
+        <div class="space-y-3">
+          <label class="block text-lg font-semibold text-slate-800">${step.label}</label>
+          <input type="text" id="activeInput" ${numericAttrs} class="w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="${step.placeholder || ''}" value="${currentVal}">
+          <p id="errorMsg" class="text-sm text-red-600 hidden"></p>
+          ${helper}
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', html);
+      const input = document.getElementById('activeInput');
+      input.focus();
+      input.addEventListener('input', () => validate());
+      validate();
+    } else if (step.type === 'select') {
+      const currentVal = state[step.key] || '';
+      const html = `
+        <div class="space-y-3">
+          <label class="block text-lg font-semibold text-slate-800">${step.label}</label>
+          <div>
+            <select id="domainSelect" class="w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white">
+              <option value="" ${currentVal === '' ? 'selected' : ''}>Select a role</option>
+              <optgroup label="Engineering">
+                <option ${currentVal==='Software Engineer'?'selected':''}>Software Engineer</option>
+                <option ${currentVal==='Senior Software Engineer'?'selected':''}>Senior Software Engineer</option>
+                <option ${currentVal==='Full-Stack Developer'?'selected':''}>Full-Stack Developer</option>
+                <option ${currentVal==='Frontend Developer'?'selected':''}>Frontend Developer</option>
+                <option ${currentVal==='Backend Developer'?'selected':''}>Backend Developer</option>
+                <option ${currentVal==='DevOps Engineer'?'selected':''}>DevOps Engineer</option>
+                <option ${currentVal==='Cloud Architect'?'selected':''}>Cloud Architect</option>
+              </optgroup>
+              <optgroup label="Data & Analytics">
+                <option ${currentVal==='Data Scientist'?'selected':''}>Data Scientist</option>
+                <option ${currentVal==='Data Engineer'?'selected':''}>Data Engineer</option>
+                <option ${currentVal==='Machine Learning Engineer'?'selected':''}>Machine Learning Engineer</option>
+                <option ${currentVal==='Analytics Engineer'?'selected':''}>Analytics Engineer</option>
+                <option ${currentVal==='Business Analyst'?'selected':''}>Business Analyst</option>
+              </optgroup>
+              <optgroup label="Management & Leadership">
+                <option ${currentVal==='Product Manager'?'selected':''}>Product Manager</option>
+                <option ${currentVal==='Project Manager'?'selected':''}>Project Manager</option>
+                <option ${currentVal==='Engineering Manager'?'selected':''}>Engineering Manager</option>
+                <option ${currentVal==='Technical Lead'?'selected':''}>Technical Lead</option>
+                <option ${currentVal==='Director of Engineering'?'selected':''}>Director of Engineering</option>
+              </optgroup>
+              <optgroup label="Design">
+                <option ${currentVal==='UX Designer'?'selected':''}>UX Designer</option>
+                <option ${currentVal==='UI Designer'?'selected':''}>UI Designer</option>
+                <option ${currentVal==='Product Designer'?'selected':''}>Product Designer</option>
+                <option ${currentVal==='Design Lead'?'selected':''}>Design Lead</option>
+              </optgroup>
+              <option value="__other__">Other (Custom)</option>
+            </select>
+          </div>
+          <div id="customDomainWrap" class="hidden">
+            <input type="text" id="customDomainInput" class="mt-2 w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-500" placeholder="Enter your role (e.g., Solutions Architect)">
+          </div>
+          <p id="errorMsg" class="text-sm text-red-600 hidden"></p>
+          ${step.helper ? `<p class=\"text-xs text-slate-500\">${step.helper}</p>` : ''}
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', html);
+      const select = document.getElementById('domainSelect');
+      const customWrap = document.getElementById('customDomainWrap');
+      const customInput = document.getElementById('customDomainInput');
+
+      // Initialize selection and custom input
+      const optionsTexts = Array.from(select.options).map(o => o.text);
+      if (currentVal && !optionsTexts.includes(currentVal)) {
+        select.value = '__other__';
+        customWrap.classList.remove('hidden');
+        customInput.value = currentVal;
+      }
+      select.addEventListener('change', () => {
+        if (select.value === '__other__') {
+          customWrap.classList.remove('hidden');
+          customInput.focus();
+        } else {
+          customWrap.classList.add('hidden');
+        }
+        validate();
+      });
+      if (customInput) customInput.addEventListener('input', validate);
+      validate();
+    } else if (step.type === 'choice') {
+      const currentVal = state[step.key] || '';
+      const choices = [
+        { value: 'none', label: 'No Experience' },
+        { value: 'lt3', label: 'Less Than 3 Years' },
+        { value: '3to5', label: '3 - 5 Years' },
+        { value: '5to10', label: '5 - 10 Years' },
+        { value: 'gt10', label: 'More than 10 Years' },
+      ];
+      const html = `
+        <div class="space-y-3">
+          <label class="block text-lg font-semibold text-slate-800">${step.label}</label>
+          ${step.helper ? `<p class=\"text-xs text-slate-500\">${step.helper}</p>` : ''}
+          <div id="yearsChoices" class="grid sm:grid-cols-2 gap-3 mt-2">
+            ${choices.map(c => `
+              <button type=\"button\" data-value=\"${c.value}\"
+                class=\"years-choice px-4 py-3 rounded-lg border ${currentVal===c.value?'border-brand-600 text-brand-700 bg-brand-50':'border-slate-300 text-slate-700 bg-white'} font-semibold text-left hover:border-brand-600 hover:bg-brand-50\">
+                ${c.label}
+              </button>
+            `).join('')}
+          </div>
+          <p id="errorMsg" class="text-sm text-red-600 hidden"></p>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', html);
+
+      const choiceWrap = document.getElementById('yearsChoices');
+      choiceWrap.addEventListener('click', (e) => {
+        const btn = e.target.closest('button.years-choice');
+        if (!btn) return;
+        const val = btn.getAttribute('data-value');
+        state.years = val;
+        // update active styles
+        choiceWrap.querySelectorAll('button.years-choice').forEach(b => {
+          const active = b.getAttribute('data-value') === val;
+          b.className = `years-choice px-4 py-3 rounded-lg border ${active?'border-brand-600 text-brand-700 bg-brand-50':'border-slate-300 text-slate-700 bg-white'} font-semibold text-left hover:border-brand-600 hover:bg-brand-50`;
+        });
+        validate();
+      });
+      validate();
+    } else if (step.type === 'review') {
+      const html = `
+        <div class="rounded-xl border border-slate-200 p-6 bg-slate-50">
+          <h2 class="text-lg font-bold text-slate-900 mb-4">Review your info</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-slate-700">
+            <div><span class="text-slate-500 text-sm">Full Name</span><div class="font-semibold">${state.name || '<span class=\'text-slate-400\'>—</span>'}</div></div>
+            <div><span class="text-slate-500 text-sm">Domain / Role</span><div class="font-semibold">${state.domain || '<span class=\'text-slate-400\'>—</span>'}</div></div>
+            <div><span class="text-slate-500 text-sm">Email</span><div class="font-semibold">${state.email || '<span class=\'text-slate-400\'>—</span>'}</div></div>
+            <div><span class="text-slate-500 text-sm">Years of Experience</span><div class="font-semibold">${state.years || '<span class=\'text-slate-400\'>—</span>'}</div></div>
+          </div>
+          <p class="text-xs text-slate-500 mt-4">You can adjust anything in the editor after this step.</p>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', html);
+      // On review, allow submission
+      nextBtn.disabled = false;
+    }
+  }
+
+  function validate() {
+    const step = steps[index];
+    if (step.type !== 'input' && step.type !== 'select' && step.type !== 'choice') return;
+    const msg = document.getElementById('errorMsg');
+    let value = '';
+    if (step.type === 'input') {
+      const input = document.getElementById('activeInput');
+      value = input ? input.value.trim() : '';
+    } else if (step.type === 'select') {
+      const select = document.getElementById('domainSelect');
+      const custom = document.getElementById('customDomainInput');
+      value = (select && select.value === '__other__') ? (custom ? custom.value.trim() : '') : (select ? select.value : '');
+    } else if (step.type === 'choice') {
+      value = state.years || '';
+    }
+    const result = step.validator ? step.validator(value) : true;
+
+    if (result === true) {
+      msg.classList.add('hidden');
+      nextBtn.disabled = value.length === 0 && step.key !== 'years';
+      return true;
+    } else {
+      msg.textContent = result;
+      msg.classList.remove('hidden');
+      nextBtn.disabled = true;
+      return false;
+    }
+  }
+
+  function saveCurrent() {
+    const step = steps[index];
+    if (step.type !== 'input' && step.type !== 'select' && step.type !== 'choice') return;
+    if (step.type === 'input') {
+      const input = document.getElementById('activeInput');
+      state[step.key] = input ? input.value.trim() : '';
+    } else if (step.type === 'select') {
+      const select = document.getElementById('domainSelect');
+      const custom = document.getElementById('customDomainInput');
+      state[step.key] = (select && select.value === '__other__') ? (custom ? custom.value.trim() : '') : (select ? select.value : '');
+    } else if (step.type === 'choice') {
+      // already stored via click handler
+    }
+  }
+
+  function goNext() {
+    const step = steps[index];
+    if ((step.type === 'input' || step.type === 'select' || step.type === 'choice') && !validate()) return;
+    saveCurrent();
+    if (index < steps.length - 1) {
+      index++;
+      render();
+    } else {
+      // Submit
+      document.getElementById('nameHidden').value = state.name;
+      document.getElementById('domainHidden').value = state.domain;
+      document.getElementById('emailHidden').value = state.email;
+      document.getElementById('yearsHidden').value = state.years;
+      document.getElementById('submitForm').submit();
+    }
+  }
+
+  function goBack() {
+    if (index === 0) return;
+    saveCurrent();
+    index--;
+    render();
+  }
+
+  // Wire buttons
+  nextBtn.addEventListener('click', goNext);
+  backBtn.addEventListener('click', goBack);
+  skipBtn.addEventListener('click', () => { state.years = ''; goNext(); });
+
+  // Keyboard support
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      const active = document.activeElement;
+      // prevent form submission behavior from Enter in input
+      if (active && active.id === 'activeInput') {
+        e.preventDefault();
+      }
+      goNext();
+    } else if (e.key === 'Enter' && e.shiftKey) {
+      e.preventDefault();
+      goBack();
+    }
+  });
+
+  // Initial render
+  render();
+</script>
+{% endblock %}

@@ -1,9 +1,29 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.urls import reverse
 
 
 def home(request):
     """Render the home page template."""
     return render(request, 'app/pages/home.html')
+
+
+def start_resume(request):
+    """Simple form to capture user basics and redirect to editor with prefilled content."""
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        domain = request.POST.get('domain', '').strip()
+        email = request.POST.get('email', '').strip()
+        years = request.POST.get('years', '').strip()
+        # Store in session and redirect to a default template (e.g., 11: Minimalist empty)
+        request.session['resume_prefill'] = {
+            'name': name,
+            'domain': domain,
+            'email': email,
+            'years': years,
+        }
+        return redirect(reverse('resume_detail', kwargs={'pk': 11}))
+
+    return render(request, 'app/pages/start_resume.html')
 
 
 def about(request):
@@ -29,6 +49,9 @@ def resume_detail(request, pk: int):
 
 def resume_editor(request, pk: int):
     """Render the resume editor with two-column layout for editing."""
+    
+    # Capture and clear prefill from session (one-time use)
+    session_prefill = request.session.pop('resume_prefill', None)
     
     # Template-specific data
     if pk == 1:
@@ -313,4 +336,46 @@ def resume_editor(request, pk: int):
             'customSections': []
         }
     
+    # If session has prefill, overlay basic fields and generate a starter summary/skills
+    if session_prefill:
+        name = session_prefill.get('name') or ''
+        domain = session_prefill.get('domain') or ''
+        email = session_prefill.get('email') or ''
+        years = session_prefill.get('years') or ''
+
+        # Only override if the template doesn't already provide content
+        if name and not template_data.get('fullName'):
+            template_data['fullName'] = name
+        if domain and not template_data.get('professionalTitle'):
+            template_data['professionalTitle'] = domain
+        if email and not template_data.get('email'):
+            template_data['email'] = email
+
+        # Compose a brief summary using domain and years, but don't override an existing one
+        try:
+            y = int(years)
+        except Exception:
+            y = None
+        if not template_data.get('summary'):
+            if domain and y is not None:
+                template_data['summary'] = f"{name or 'Experienced professional'} {('with ' + str(y) + ' years of experience') if y >= 1 else 'at the beginning of the career'} in {domain}. Proven ability to deliver results, collaborate across teams, and continuously improve."
+            elif domain:
+                template_data['summary'] = f"{name or 'Motivated professional'} specializing in {domain}. Passionate about learning and delivering value quickly."
+
+        # Seed minimal starter skills based on domain if skills are empty
+        domain_lower = (domain or '').lower()
+        starter_skills = []
+        if 'data' in domain_lower:
+            starter_skills = [{'name': 'Python', 'level': 85}, {'name': 'SQL', 'level': 85}, {'name': 'Pandas', 'level': 80}]
+        elif 'product' in domain_lower:
+            starter_skills = [{'name': 'Product Strategy', 'level': 85}, {'name': 'User Research', 'level': 80}, {'name': 'Roadmapping', 'level': 80}]
+        elif 'design' in domain_lower or 'ux' in domain_lower:
+            starter_skills = [{'name': 'Figma', 'level': 85}, {'name': 'Prototyping', 'level': 80}, {'name': 'User Research', 'level': 80}]
+        elif 'devops' in domain_lower or 'cloud' in domain_lower:
+            starter_skills = [{'name': 'Docker', 'level': 85}, {'name': 'Kubernetes', 'level': 80}, {'name': 'AWS', 'level': 80}]
+        elif 'engineer' in domain_lower or 'developer' in domain_lower or 'software' in domain_lower:
+            starter_skills = [{'name': 'JavaScript', 'level': 85}, {'name': 'Python', 'level': 85}, {'name': 'Git', 'level': 80}]
+        if starter_skills and not template_data.get('skills'):
+            template_data['skills'] = starter_skills
+
     return render(request, 'app/pages/resume_editor.html', template_data)

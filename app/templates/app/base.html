@@ -9,6 +9,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Muli:200,300,400,600,700,800" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'app/app.css' %}">
     <script>
         tailwind.config = {
             theme: {
@@ -100,7 +101,7 @@
                 <!-- CTA Buttons -->
                 <div class="hidden md:flex items-center gap-4">
                     <a href="#" class="text-sm font-semibold text-slate-600 hover:text-slate-900">Log in</a>
-                    <a href="{% url 'resume_explorer' %}" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-full shadow-lg hover:shadow-brand-500/30 transition-all transform hover:-translate-y-0.5">
+                    <a href="{% url 'start_resume' %}" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-full shadow-lg hover:shadow-brand-500/30 transition-all transform hover:-translate-y-0.5">
                         Create My Resume
                     </a>
                 </div>
@@ -119,7 +120,7 @@
                 <a href="{% url 'resume_explorer' %}" class="text-slate-600 font-medium">Templates</a>
                 <a href="{% url 'home' %}#testimonials" class="text-slate-600 font-medium">Reviews</a>
                 <hr class="border-slate-100">
-                <a href="{% url 'resume_explorer' %}" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-full shadow-lg hover:shadow-brand-500/30 transition-all text-center">
+                <a href="{% url 'start_resume' %}" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-full shadow-lg hover:shadow-brand-500/30 transition-all text-center">
                     Create My Resume
                 </a>
             </div>
