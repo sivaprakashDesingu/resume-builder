@@ -372,10 +372,11 @@
         
         // Prefilled data from Django context
         const prefillData = {
-            experiences: {{ experiences|safe }},
-            educations: {{ educations|safe }},
-            skills: {{ skills|safe }} || [],
-            customSections: {{ customSections|safe }} || []
+            experiences: {{ experiences_json|safe }},
+            educations: {{ educations_json|safe }},
+            skills: {{ skills_json|safe }} || [],
+            certifications: {{ certifications_json|safe }} || [],
+            customSections: {{ customSections_json|safe }} || []
         };
 
         function toggleTitleDropdown() {

@@ -16,6 +16,7 @@ urlpatterns = [
     path('resume_explorer/', views.resume_explorer),
     path('resume_explorer.html', views.resume_explorer),
     path('resume_explorer.htnl', views.resume_explorer),
+    path('resume-eplorer/upload/', views.resume_upload, name='resume_upload'),
     path('resume-eplorer/<int:pk>/', views.resume_editor, name='resume_detail'),
     path('resume_explorer/<int:pk>/', views.resume_editor, name='resume_detail_underscore'),
     path('resume1/', views.resume1, name='resume1'),

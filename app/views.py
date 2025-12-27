@@ -1,5 +1,9 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.http import HttpResponseBadRequest
+from django.core.serializers.json import DjangoJSONEncoder
+import json
+from .utils.resume_parser import parse_resume
 
 
 def home(request):
@@ -34,6 +38,47 @@ def about(request):
 def resume_explorer(request):
     """Render the resume explorer listing page."""
     return render(request, 'app/pages/resume_explorer.html')
+
+
+def resume_upload(request):
+    """Handle resume file upload from explorer, parse, and redirect to editor.
+    Expects multipart/form-data with fields: file, template_id
+    """
+    if request.method != 'POST':
+        return HttpResponseBadRequest('Invalid method')
+
+    f = request.FILES.get('file')
+    template_id = request.POST.get('template_id')
+    if not f or not template_id:
+        return HttpResponseBadRequest('Missing file or template id')
+
+    try:
+        data = parse_resume(f.read(), f.name, getattr(f, 'content_type', None))
+    except Exception as e:
+        # On parse failure, still proceed with empty data but note error
+        data = {
+            'fullName': '', 'professionalTitle': '', 'email': '', 'phone': '', 'location': '',
+            'summary': '', 'skills': [], 'experiences': [], 'educations': [], 'customSections': []
+        }
+        # Optionally, store an error message in session
+        request.session['resume_upload_error'] = str(e)
+
+    # Store parsed data in session; the editor can use it to prefill fields
+    request.session['resume_prefill'] = {
+        'name': data.get('fullName', ''),
+        'domain': data.get('professionalTitle', ''),
+        'email': data.get('email', ''),
+        'years': '',  # unknown from parsing
+    }
+    # Store richer structure for experiences/education/skills
+    request.session['resume_parsed_data'] = data
+
+    # Redirect to editor for the chosen template
+    try:
+        pk = int(template_id)
+    except Exception:
+        pk = 11  # default minimalist
+    return redirect(reverse('resume_detail', kwargs={'pk': pk}))
 
 
 def resume1(request):
@@ -377,5 +422,29 @@ def resume_editor(request, pk: int):
             starter_skills = [{'name': 'JavaScript', 'level': 85}, {'name': 'Python', 'level': 85}, {'name': 'Git', 'level': 80}]
         if starter_skills and not template_data.get('skills'):
             template_data['skills'] = starter_skills
+
+    # If parser stored richer structured data, merge deeper fields now
+    parsed_data = request.session.pop('resume_parsed_data', None)
+    if parsed_data:
+        # Parsed data takes precedence over template defaults
+        for field in ['fullName', 'professionalTitle', 'email', 'phone', 'location', 'summary']:
+            if parsed_data.get(field):
+                template_data[field] = parsed_data[field]
+        for list_field in ['skills', 'experiences', 'educations', 'certifications']:
+            # Always use parsed data for lists (even if empty) - don't fall back to template defaults
+            if list_field in parsed_data:
+                template_data[list_field] = parsed_data[list_field]
+
+    # Ensure all required fields exist with defaults if not present
+    for field in ['skills', 'experiences', 'educations', 'certifications', 'customSections']:
+        if field not in template_data:
+            template_data[field] = []
+
+    # Serialize list fields to JSON for template use
+    template_data['experiences_json'] = json.dumps(template_data.get('experiences', []), cls=DjangoJSONEncoder)
+    template_data['educations_json'] = json.dumps(template_data.get('educations', []), cls=DjangoJSONEncoder)
+    template_data['skills_json'] = json.dumps(template_data.get('skills', []), cls=DjangoJSONEncoder)
+    template_data['certifications_json'] = json.dumps(template_data.get('certifications', []), cls=DjangoJSONEncoder)
+    template_data['customSections_json'] = json.dumps(template_data.get('customSections', []), cls=DjangoJSONEncoder)
 
     return render(request, 'app/pages/resume_editor.html', template_data)
